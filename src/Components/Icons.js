@@ -1,5 +1,7 @@
 import React from "react";
 
+// Header 등에 사용하는 모든 아이콘들이 들어있습니다.
+
 export const Compass = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

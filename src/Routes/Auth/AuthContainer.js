@@ -36,16 +36,17 @@ export default () => {
   });
   const localLogInMutation = useMutation(LOCAL_LOG_IN);
 
+  // 버튼을 눌러 Submit 했을 때 어떤 일이 일어나는가.
   const onSubmit = async e => {
-    e.preventDefault();
+    e.preventDefault(); // 보통은 Form (Input 등을) 보내게 되면 페이지가 새로고침됩니다. 이걸 방지해줘요.
     if (action === "logIn") {
-      if (email.value !== "") {
+      if (email.value !== "") { // 이메일 input form에 유저가 무언가 채웠을 경우
         try {
           const {
             data: { requestSecret }
           } = await requestSecretMutation();
           if (!requestSecret) {
-            toast.error("You dont have an account yet, create one");
+            toast.error("You dont have an account yet, create one") // RequestSecret을 통해 secret을 보내지 못했을 경우
             setTimeout(() => setAction("signUp"), 3000);
           } else {
             toast.success("Check your inbox for your login secret");
