@@ -108,7 +108,7 @@ import { gql } from "apollo-boost";
 import { useQuery } from "react-apollo-hooks";
 
 // GraphQL query isLoggedIn을 정의해줍니다.
-// @client: d
+// @client: 설명은 아래에
 const QUERY = gql`
   {
     isLoggedIn @client

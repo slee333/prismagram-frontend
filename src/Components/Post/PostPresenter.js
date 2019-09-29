@@ -83,6 +83,7 @@ const Timestamp = styled.span`
   border-bottom: ${props => props.theme.lightGreyColor} 1px solid;
 `;
 
+// TextareaAutosize는 텍스트박스를 채우는 텍스트 양이 길어져도 스크롤바가 생기지 않고 텍스트박스 크기가 자동으로 조절되게 해줍니다.
 const Textarea = styled(TextareaAutosize)`
   border: none;
   width: 100%;
@@ -141,6 +142,7 @@ export default ({
     </Files>
     <Meta>
       <Buttons>
+          {/* isLiked가 true면 빨간 하트, 아니면 빈 하트 */}
         <Button onClick={toggleLike}>
           {isLiked ? <HeartFull /> : <HeartEmpty />}
         </Button>
@@ -152,6 +154,7 @@ export default ({
       <Caption>
         <FatText text={username} /> {caption}
       </Caption>
+      {/* isLiked가 true면 빨간 하트, 아니면 빈 하트 */}
       {comments && (
         <Comments>
           {comments.map(comment => (
@@ -169,6 +172,7 @@ export default ({
         </Comments>
       )}
       <Timestamp>{createdAt}</Timestamp>
+      {/* 본격적으로 댓글을 달기 위한 텍스트가 입력되는 곳. */}
       <Textarea
         onKeyPress={onKeyPress}
         placeholder={"Add a comment..."}
