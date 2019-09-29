@@ -6,6 +6,10 @@ import Loader from "../../Components/Loader";
 import UserCard from "../../Components/UserCard";
 import SquarePost from "../../Components/SquarePost";
 
+
+// 이 파트는 깊이 안 봤는데, 아마 SEARCH query로 찾아온 데이터들을
+// 네모난 카드 형태로 만들어서 보여줄겁니다.
+
 const Wrapper = styled.div`
   height: 50vh;
 `;

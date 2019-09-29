@@ -62,12 +62,14 @@ const Posts = styled.div`
 
 export default ({ loading, data, logOut }) => {
   if (loading === true) {
+    // 로딩중이라면 로딩화면!
     return (
       <Wrapper>
         <Loader />
       </Wrapper>
     );
   } else if (!loading && data && data.seeUser) {
+    // 로딩도 완료되고, 데이터도 넘어왔고 한다면 사용자의 프로필을 만들어줍니다.
     const {
       seeUser: {
         id,

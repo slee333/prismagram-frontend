@@ -6,6 +6,8 @@ import { useMutation } from "react-apollo-hooks";
 import { TOGGLE_LIKE, ADD_COMMENT } from "./PostQueries";
 import { toast } from "react-toastify";
 
+// * Post를 구성하는데 필요한 변수들을 받아오고, Post와 관련된 여러 함수들을 정의합니다.
+
 const PostContainer = ({
   id,
   user,
@@ -29,13 +31,18 @@ const PostContainer = ({
   const comment = useInput("");
 
   // PostQueries.js에 달아놓은 mutation들을 이용해줍니다.
+  // 좋아요를 toggle (껐다 켰다) 해주는 mutation입니다.
   const toggleLikeMutation = useMutation(TOGGLE_LIKE, {
     variables: { postId: id }
   }); // toggleLike mutation엔 Post의 id만 필요하니 해당 부분을 넣어주고
+
   const addCommentMutation = useMutation(ADD_COMMENT, {
     variables: { postId: id, text: comment.value }
   }); // add comment는 post의 id와 코멘트 내용을 필요로 합니다.
 
+  // 인스타그램에서 slide 시켜주는 부분입니다.
+  // 각 post 안에는 file들이 있는데, 이걸 3초에 한번씩 바꿔줍니다.
+  // 병원 프로파일 페이지에 응용이 가능할거같아요
   const slide = () => {
     const totalFiles = files.length;
     if (currentItem === totalFiles - 1) {

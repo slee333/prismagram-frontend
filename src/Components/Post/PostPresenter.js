@@ -6,6 +6,7 @@ import FatText from "../FatText";
 import Avatar from "../Avatar";
 import { HeartFull, HeartEmpty, Comment as CommentIcon } from "../Icons";
 
+// Css를 이용한 스타일링 하는 부분입니다.
 const Post = styled.div`
   ${props => props.theme.whiteBox};
   width: 100%;
@@ -84,6 +85,7 @@ const Timestamp = styled.span`
 `;
 
 // TextareaAutosize는 텍스트박스를 채우는 텍스트 양이 길어져도 스크롤바가 생기지 않고 텍스트박스 크기가 자동으로 조절되게 해줍니다.
+// TextareaAutosize라는 컴포넌트가 클래스를 가지고 있어서 이런 식으로 할 수 있다 하네요. 다 이런식으로 할 수 있는건 아닌듯합니다.
 const Textarea = styled(TextareaAutosize)`
   border: none;
   width: 100%;
@@ -94,10 +96,12 @@ const Textarea = styled(TextareaAutosize)`
   }
 `;
 
+// unordered list
 const Comments = styled.ul`
   margin-top: 10px;
 `;
 
+// ordered list
 const Comment = styled.li`
   margin-bottom: 7px;
   span {
@@ -151,10 +155,11 @@ export default ({
         </Button>
       </Buttons>
       <FatText text={likeCount === 1 ? "1 like" : `${likeCount} likes`} />
+      {/* 캡션을 달아주고요 */}
       <Caption>
         <FatText text={username} /> {caption}
       </Caption>
-      {/* isLiked가 true면 빨간 하트, 아니면 빈 하트 */}
+      {/* 이미 달린 코멘트가 단다면 코멘트들을 map 해줍니다. */}
       {comments && (
         <Comments>
           {comments.map(comment => (

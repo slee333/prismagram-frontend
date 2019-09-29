@@ -15,7 +15,7 @@ import Notifications from "../Routes/Notifications"
 // Profile로 가는 Route이 뒤에 위치한 이유는... 
 // 프로필은 /username을 입력해서 접속하게 되는데, Profile로 향하는 Route를 상위에 배치할경우 explore나 search에 접근하려 할 때 해당 컴포넌트가 아닌 search/explore란 유저를 찾게 됩니다.
 
-// Switch: 딱 하나의 Route만 렌더링함.
+// Switch: 딱 하나의 Route만 렌더링할 수 있게 도와줍니다.
 const LoggedInRoutes = () => (
   <Switch>
     <Route exact path="/" component={Feed} />
@@ -27,6 +27,7 @@ const LoggedInRoutes = () => (
   </Switch>
 );
 
+// 로그아웃시 메인페이지로
 const LoggedOutRoutes = () => (
   <Switch>
     <Route exact path="/" component={Auth} />
@@ -34,9 +35,12 @@ const LoggedOutRoutes = () => (
   </Switch>
 );
 
+// 로그인이 true냐 false냐 따라 LoggedInRoutes / LoggedOutRoutes를 보내줍니다.
+// 로그인시 해당 url에 따른 창이 나타납니다.
 const AppRouter = ({ isLoggedIn }) =>
   isLoggedIn ? <LoggedInRoutes /> : <LoggedOutRoutes />;
 
+// AppRouter에 필요한 propTypes을 정의. isLoggedIn은 꼭 필요합니다.
 AppRouter.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired
 };

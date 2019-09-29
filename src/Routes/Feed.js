@@ -37,7 +37,7 @@ const FEED_QUERY = gql`
   }
 `;
 
-// Wrapper that centers everything
+// 마찬가지로 Wrapper를 이용해 모든걸 가운데 위치시킵니다.
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -49,6 +49,9 @@ export default () => {
   // 상단에 FEED_QUERY에서 정의한 query의 결과값을 react-apollo-hooks에서 제공하는 useQuery를 이용해 불러옵니다.
   // return 되는 객체들은 data (query 결과값)와 loading (로딩중인지 아닌지)입니다.
   // 로딩중일땐 Loader.js를 불러옵니다.
+
+  // data.seedFeed.map(post => ...) 를 통해서 데이터 내에 존재하는 모든 post 데이터들을 
+  // 피드에 표시해줍니다.
   const { data, loading } = useQuery(FEED_QUERY); 
   return (
     <Wrapper>
