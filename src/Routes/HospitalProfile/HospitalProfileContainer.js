@@ -27,7 +27,7 @@ const GET_HOSPITAL = gql`
   }
 `;
 
-// 사용자가 Medical Staff 스태프인지 환자인지 확인
+// 사용자가 Medical Staff인지 환자인지 확인
 const CHECK_USER = gql`
   query isStaff($username: String!) {
     isStaff(username: $name)
