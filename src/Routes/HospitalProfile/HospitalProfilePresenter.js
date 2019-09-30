@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Helmet } from "rl-react-helmet";
 import Loader from "../../Components/Loader";
@@ -60,6 +60,29 @@ const Posts = styled.div`
   grid-auto-rows: 200px;
 `;
 
+const Files = styled.div`
+  position: relative;
+  padding-bottom: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-shrink: 0;
+  z-index: -100;
+`;
+
+const File = styled.div`
+  max-width: 100%;
+  width: 100%;
+  height: 600px;
+  position: absolute;
+  top: 0;
+  background-image: url(${props => props.src});
+  background-size: cover;
+  background-position: center;
+  opacity: ${props => (props.showing ? 1 : 0)};
+  transition: opacity 0.5s linear;
+`;
+
 export default ({ loading, data, logOut }) => {
   if (loading === true) {
     //  로딩중이라면 로딩화면!
@@ -84,17 +107,39 @@ export default ({ loading, data, logOut }) => {
         patientsCount
       }
     } = data;
-    console.log(data);
+
+    const [currentItem, setCurrentItem] = useState(0);
+    const slide = () => {
+      const totalFiles = files.length;
+      if (currentItem === totalFiles - 1) {
+        setTimeout(() => setCurrentItem(0), 3000);
+      } else {
+        setTimeout(() => setCurrentItem(currentItem + 1), 3000);
+      }
+    };
+    useEffect(() => {
+      slide();
+    }, [currentItem]);
+
     return (
       <Wrapper>
         <Helmet>
           <title>{name} | H+ground</title>
         </Helmet>
+        <Files>
+          {files &&
+            files.map((file, index) => (
+              <File
+                key={file.id}
+                src={file.url}
+                showing={index === currentItem}
+              />
+            ))}
+        </Files>
         <Header>
           {/* <HeaderColumn>
              <Avatar size="lg" url={files[0].url} />
            </HeaderColumn> */}
-           <div></div>
           <HeaderColumn>
             <UsernameRow>
               <Username>{name}</Username>{" "}
@@ -118,7 +163,7 @@ export default ({ loading, data, logOut }) => {
               <Button onClick={console.log("I'm Youurs")} text="Your HP" />
             ) : (
               //  <FollowButton isFollowing={isFollowing} id={id} />
-              <Button onClick={console.log("ahahaha")} text="Not your HP" />
+              <Button onClick={console.log("fuuuck")} text="Not your HP" />
             )}
           </HeaderColumn>
         </Header>
