@@ -62,73 +62,77 @@ const Posts = styled.div`
 
 export default ({ loading, data, logOut }) => {
   if (loading === true) {
-    // 로딩중이라면 로딩화면!
+    //  로딩중이라면 로딩화면!
     return (
       <Wrapper>
         <Loader />
       </Wrapper>
     );
-  } else if (!loading && data && data.seeUser) {
-    // 로딩도 완료되고, 데이터도 넘어왔고 한다면 사용자의 프로필을 만들어줍니다.
+  } else if (!loading && data && data.seeHospital) {
+    //  로딩도 완료되고, 데이터도 넘어왔고 한다면 사용자의 프로필을 만들어줍니다.
     const {
-      seeUser: {
+      seeHospital: {
         id,
-        avatar,
-        username,
-        fullName,
-        isFollowing,
-        isSelf,
+        name,
         bio,
-        followingCount,
-        followersCount,
-        postsCount,
-        posts
+        files,
+        location,
+        staffs,
+        admin,
+        isYours,
+        staffsCount,
+        patientsCount
       }
     } = data;
+    console.log(data);
     return (
       <Wrapper>
         <Helmet>
-          <title>{username} | Prismagram</title>
+          <title>{name} | H+ground</title>
         </Helmet>
         <Header>
-          <HeaderColumn>
-            <Avatar size="lg" url={avatar} />
-          </HeaderColumn>
+          {/* <HeaderColumn>
+             <Avatar size="lg" url={files[0].url} />
+           </HeaderColumn> */}
+           <div></div>
           <HeaderColumn>
             <UsernameRow>
-              <Username>{username}</Username>{" "}
-              {isSelf ? (
-                <Button onClick={logOut} text="Log Out" />
-              ) : (
-                <FollowButton isFollowing={isFollowing} id={id} />
-              )}
+              <Username>{name}</Username>{" "}
             </UsernameRow>
             <Counts>
               <Count>
-                <FatText text={String(postsCount)} /> posts
+                <FatText text={String(staffsCount)} /> Staffs
               </Count>
               <Count>
-                <FatText text={String(followersCount)} /> followers
+                <FatText text={String(patientsCount)} /> Pts
               </Count>
               <Count>
-                <FatText text={String(followingCount)} /> following
+                위치: <FatText text={String(location)} />
               </Count>
             </Counts>
-            <FullName text={fullName} />
+            <Username text={location} />
             <Bio>{bio}</Bio>
           </HeaderColumn>
+          <HeaderColumn>
+            {isYours ? (
+              <Button onClick={console.log("I'm Youurs")} text="Your HP" />
+            ) : (
+              //  <FollowButton isFollowing={isFollowing} id={id} />
+              <Button onClick={console.log("ahahaha")} text="Not your HP" />
+            )}
+          </HeaderColumn>
         </Header>
-        <Posts>
-          {posts &&
-            posts.map(post => (
-              <SquarePost
-                key={post.id}
-                likeCount={post.likeCount}
-                commentCount={post.commentCount}
-                file={post.files[0]}
-              />
-            ))}
-        </Posts>
+        {/* <Posts>
+           {posts &&
+             posts.map(post => (
+               <SquarePost
+                 key={post.id}
+                 likeCount={post.likeCount}
+                 commentCount={post.commentCount}
+                 file={post.files[0]}
+               />
+             ))}
+         </Posts> */}
       </Wrapper>
     );
   }
