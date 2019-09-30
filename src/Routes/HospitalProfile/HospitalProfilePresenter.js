@@ -61,19 +61,17 @@ const Posts = styled.div`
 `;
 
 const Files = styled.div`
-  position: relative;
-  padding-bottom: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  flex-shrink: 0;
+  position: absolute;
+  left: 20%;
+  top: 0%;
+  width: 60%;
   z-index: -100;
 `;
 
 const File = styled.div`
   max-width: 100%;
   width: 100%;
-  height: 600px;
+  height: 60vh;
   position: absolute;
   top: 0;
   background-image: url(${props => props.src});
