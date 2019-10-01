@@ -196,7 +196,6 @@ export default ({ loading, data, logOut }) => {
             </Docs>
             {
               <Docs>
-                <Avatar size="lg" url={staffs[0].avatar} />
                 {staffs &&
                   staffs.map(staff => (
                     <span>

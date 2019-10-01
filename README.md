@@ -1,7 +1,28 @@
-# Instaclone Frontend
+# H+ground Frontend
 
 
-## 1. 설치하기
+# 0. Requirements
+---
+**Node js** (버젼은 10 이상이면 괜찮습니다)
+
+**npm** / **yarn**: 둘 다 package를 manage해주는데 역할은 같다고 알아요. npm을 써도 무방하지만 체감상 속도가 빨라서 저는 yarn을 쓰고 있어요.
+
+
+To-do-list
+
+1. 설치 ~ 실행 후 로그인. 이하 기능들.
+  - 백엔드 실행법도 다시 추가해야
+2. hospital profile 만든 과정
+  - datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
+  - Resolver 만들기
+  - Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
+  - 이후 Front end로 넘어옴
+  - Routes에서 hosptial profile로 넘어가는 route 만들기
+  - Header에서 해당 route로 연결해주는 링크 만들기?
+  - ProfilePresenter, Container 역할 + 디자인
+
+---
+# 1. 설치하기
 
 백엔드를 우선 실행해주세요. (백엔드 실행 관련해서는 백엔드 리포를 참조해주세요)
 그러면 GraphQL 백엔드가 localhost:4000에서 돌아갈텐데요.
