@@ -9,16 +9,16 @@
 
 node.js와 npm 혹은 yarn은 서버를 돌리는데, 또 패키지들을 관리하는데 필요하니 꼭 설치해주세요.
 
+프론트엔드가 실행되는 모습은 Netlify[https://hgroundtest.netlify.com]에서 확인하실 수 있습니다.
+
 ---
 
-# 1. 백앤드 설치하기
+# 1. 설치하기
 
-아마 하신 분도 있겠지만 
-
-  git clone https://github.com/slee333/prismagram.git
+## 1.1 백엔드 설치하기
 
 
-프론트엔드가 실행되는 모습은 Netlify(https://hgroundtest.netlify.com)에서 확인하실 수 있습니다.
+## 1.2 프론트엔드 설치하기
 
 
 To-do-list
