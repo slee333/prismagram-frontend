@@ -18,6 +18,9 @@ node.js와 npm 혹은 yarn은 서버를 돌리는데, 또 패키지들을 관리
   git clone https://github.com/slee333/prismagram.git
 
 
+프론트엔드가 실행되는 모습은 Netlify(https://hgroundtest.netlify.com)에서 확인하실 수 있습니다.
+
+
 To-do-list
 
 1. 설치 ~ 실행 후 로그인. 이하 기능들.
