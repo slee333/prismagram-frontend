@@ -19,6 +19,7 @@ const Header = styled.header`
   width: 80%;
   margin: 0 auto;
   margin-bottom: 40px;
+  margin-top: 180px;
 `;
 
 const HeaderColumn = styled.div``;
@@ -71,7 +72,7 @@ const Files = styled.div`
 const File = styled.div`
   max-width: 100%;
   width: 100%;
-  height: 60vh;
+  height: 300px;
   position: absolute;
   top: 0;
   background-image: url(${props => props.src});
@@ -79,6 +80,17 @@ const File = styled.div`
   background-position: center;
   opacity: ${props => (props.showing ? 1 : 0)};
   transition: opacity 0.5s linear;
+`;
+
+const ContentRow = styled.div`
+  width: 100%;
+  margin-top: 60px;
+  margin-bottom: 10px;
+`;
+
+const Docs = styled.div`
+  min-height: 30px;
+  text
 `;
 
 export default ({ loading, data, logOut }) => {
@@ -105,7 +117,7 @@ export default ({ loading, data, logOut }) => {
         patientsCount
       }
     } = data;
-
+    console.log(data);
     const [currentItem, setCurrentItem] = useState(0);
     const slide = () => {
       const totalFiles = files.length;
@@ -154,17 +166,59 @@ export default ({ loading, data, logOut }) => {
               </Count>
             </Counts>
             <Username text={location} />
-            <Bio>{bio}</Bio>
           </HeaderColumn>
           <HeaderColumn>
             {isYours ? (
               <Button onClick={console.log("I'm Youurs")} text="Your HP" />
             ) : (
               //  <FollowButton isFollowing={isFollowing} id={id} />
-              <Button onClick={console.log("fuuuck")} text="Not your HP" />
+              <Button
+                onClick={console.log("Not your hospital")}
+                text="Not your HP"
+              />
             )}
           </HeaderColumn>
         </Header>
+        <div id="Content">
+          <ContentRow>
+            <FatText text={"병원 소개"} />
+          </ContentRow>
+          <div>{bio}</div>
+
+          <ContentRow>
+            <FatText text={"선생님 프로파일"} />
+            <Docs>
+              <Avatar size="lg" url={admin.avatar} />
+              {"원장: " + admin.fullName}
+              {"\n 이력: " + admin.bio}}
+              {/* {admin &&
+                admin.map(adm => (<span>{adm.fullName + ":" + adm.bio}</span>))} */}
+            </Docs>
+            {
+              <Docs>
+                <Avatar size="lg" url={staffs[0].avatar} />
+                {staffs &&
+                  staffs.map(staff => (
+                    <span>
+                      {"스탭:" + staff.fullName + "\n 이력: " + staff.bio}
+                    </span>
+                  ))}
+              </Docs>
+            }
+          </ContentRow>
+          <ContentRow>
+            <FatText text={"위치"} />
+          </ContentRow>
+          <bio>{"병원 위치:   " + location}</bio>
+          <ContentRow>
+            <FatText text={"스탭 인원"} />
+          </ContentRow>
+          <bio>{"Medical Staffs:" + String(staffsCount + 1)}</bio>
+          <ContentRow>
+            <FatText text={"환자 인원수"} />
+          </ContentRow>
+          <bio>{"Number of patients:" + String(patientsCount)}</bio>
+        </div>
         {/* <Posts>
            {posts &&
              posts.map(post => (

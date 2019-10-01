@@ -22,6 +22,7 @@ const GET_HOSPITAL = gql`
         fullName
         username
         isSelf
+        bio
       }
       admin {
         id
@@ -29,6 +30,7 @@ const GET_HOSPITAL = gql`
         fullName
         username
         isSelf
+        bio
       }
       isYours
       staffsCount
