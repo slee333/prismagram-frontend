@@ -7,6 +7,7 @@ import Explore from "../Routes/Explore";
 import Search from "../Routes/Search";
 import Profile from "../Routes/Profile";
 import Notifications from "../Routes/Notifications"
+import HospitalProfile from "../Routes/HospitalProfile";
 
 // 일종의 라우터입니다.
 // './explore'은 explore란 Component로, path "/" 는 Feed 란 component로 가는 식이죠
@@ -22,7 +23,8 @@ const LoggedInRoutes = () => (
     <Route path="/explore" component={Explore} />
     <Route path="/search" component={Search} />
     <Route path="/notifications" component={Notifications} />
-    <Route path="/:username" component={Profile} />
+    <Route path="/user/:username" component={Profile} />
+    <Route path="/hospital/:name" component={HospitalProfile}/>
     <Redirect from="*" to="/" />
   </Switch>
 );

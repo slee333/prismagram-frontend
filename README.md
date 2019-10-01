@@ -1,20 +1,38 @@
 # H+ground Frontend
 
-TO-DO LIST:
-- [ ] 병원 관련 데이터모델 만들기
-  1. 병원 소개글 (bio))
-  2. 병원 위치
-  3. 병원 사진/로고 등
-  4. 병원 선생님들 (~user와 연계)
-  5. 병원 예약
-  6. 병원과의 DM 기능 ~ 메시징.
-    - Rooms 데이터모델을 User간에만 가능하게가 아니라 hospital과도 주고받을 수 있게
-- [ ] 병원 프로필 
-- [ ] 병원 피드 / 포스트 페이지 구분
-- [ ] 유저: 사이드바: 내가 소속된 병원, 내가 다니는 병원 등이 뜬다 (...더보기 가능)
+
+# 0. Requirements
+---
+**Node js** (버젼은 10 이상이면 괜찮습니다)
+
+**npm** / **yarn**: 둘 다 package를 manage해주는데 역할은 같다고 알아요. npm을 써도 무방하지만 체감상 속도가 빨라서 저는 yarn을 쓰고 있어요.
+
+node.js와 npm 혹은 yarn은 서버를 돌리는데, 또 패키지들을 관리하는데 필요하니 꼭 설치해주세요.
+
+---
+
+# 1. 백앤드 설치하기
+
+아마 하신 분도 있겠지만 
+
+  git clone https://github.com/slee333/prismagram.git
 
 
-## 1. 설치하기
+To-do-list
+
+1. 설치 ~ 실행 후 로그인. 이하 기능들.
+  - 백엔드 실행법도 다시 추가해야
+2. hospital profile 만든 과정
+  - datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
+  - Resolver 만들기
+  - Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
+  - 이후 Front end로 넘어옴
+  - Routes에서 hosptial profile로 넘어가는 route 만들기
+  - Header에서 해당 route로 연결해주는 링크 만들기?
+  - ProfilePresenter, Container 역할 + 디자인
+
+---
+# 1. 설치하기
 
 백엔드를 우선 실행해주세요. (백엔드 실행 관련해서는 백엔드 리포를 참조해주세요)
 그러면 GraphQL 백엔드가 localhost:4000에서 돌아갈텐데요.
@@ -62,37 +80,13 @@ export default new ApolloClient({
 
 
 
-# 주석 읽는 순서
-
-1. Components/App.js
-2. Components/Routes.js
-3. Routes/Feed.js
-4. Components/Post
-5. Components/Header > Routes/Search
-6. Profile
-
-
-이런 식으로 주석을 대강 적어봤는데 이해가 되시려나 모르겠네요 ㅜㅜ 일단 이 순서로 보시면 될거같아요.
-
-일단 중요하다 여겨지는 부분들에는 주석을 달아놓았어요. 아마 부족한 부분이 있을텐데 잘 이해 안가는 부분이 있으면 말씀주세요.
-
-
-이 아래쪽엔 (제가 공부하는 목적으로) 이 앱에 쓰인 개념들을 몇개 적어놓았습니다.
-
-
 ---
 
-# 아폴로 클라이언트
-
-ApolloClient는 GraphQL API와 앱을 연결합니다.
-
-
+아폴로 클라이언트:
+Apollo Client를 시작하는것. ApolloClient는 GraphQL API와 앱을 연결합니다.
 Apollo는 graphql을 기반으로 한 상태관리 플랫폼이다. 클라이언트에서 graphql을 사용하여 데이터를 가져오는 UI를 만들 때 사용하기 좋다.
-
-
 특히 React하고 결합이 좋다. => 컴포넌트 자체에 Query를 녹여서 구현하기가 쉬워진다
 그리고 App.js와 Apollo Client를 연결해준다.
-
 
 Dog라는 component에서 GET_DOGS라는 query를 이용해볼게요.
 
@@ -126,19 +120,19 @@ const Dogs = ({ onDogSelected }) => (
 );
 ```
 
-## LocalState
+#### LocalState
 
 원래는 post가 열리고 닫히고 이런걸 다 LocalState에서 조절하는데
 일단 지금은 로그인만 조절해봅시다.
 웹사이트의 LocalStorage:
 크롬에서 F12를 누른다음 localStorage를 쳐보세요. 말 그래도 서버가 아닌 사용자가 프론트엔드를 이용하는데 필요한것들이 이거에요. 저희가 사용하는 기기 (로컬)에 쓰이는 정보들이 여기 저장됩니다.
 
-## Apollo Chorme Extension
+#### Apollo Chorme Extension
 
 Apollo Client를 보다 편하게 사용할 수 있게 해주는 크롬 확장도구.
 GraphQL playground와 유사하게 query들을 만져보거나 확인하거나 할 수 있다.
 
-## 프론트엔드에서의 GraphQL query
+#### 프론트엔드에서의 GraphQL query
 
 ```js
 import { gql } from "apollo-boost";
@@ -171,5 +165,6 @@ Glboalstyles: Global Styles.
 
 
 # Components 살펴보기
+
 
 Hooks: Hooks는 src/Hooks에서 가져옴. 애초에 useInputs.js밖에 없음
