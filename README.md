@@ -8,6 +8,9 @@
 **npm** / **yarn**: 둘 다 package를 manage해주는데 역할은 같다고 알아요. npm을 써도 무방하지만 체감상 속도가 빨라서 저는 yarn을 쓰고 있어요.
 
 
+프론트엔드가 실행되는 모습은 Netlify(https://hgroundtest.netlify.com)에서 확인하실 수 있습니다.
+
+
 To-do-list
 
 1. 설치 ~ 실행 후 로그인. 이하 기능들.
