@@ -869,6 +869,8 @@ return prisma.createHospital({ .... })
 정리하자면, `addHospital.js`는 우리가 graphql 파일에서 정의한 input들을 받고 프로세싱해서 output을 만들어주는 함수입니다. 이로서 Resolver 구성이 끝났습니다.
 
 
+---
+
 ### 2.3.3 addHospital.js 시험해보기 (GraphQL playground)
 
 
@@ -931,8 +933,32 @@ mutation {
 }
 ```
 
-여기서 `<JWT>` 자리에 Token을 집어넣어줍니다. Token은 어디서 받느냐면
+여기서 `<JWT>` 자리에 Token을 집어넣어줍니다. Token은 프론트엔드에 접속하여 획득할 수 있습니다.
 
+
+![Imgur](https://i.imgur.com/1Oq5cls.png)
+
+
+위에서 로그아웃에 대해 이야기할 때 구글 크롬 Developer tool로 LocalStoarge를 확인해 token 값을 조회할 수 있었단 걸 기억하시나요? 여기서 토큰값을 얻어올 수 있습니다. 해당 토큰값을 `<JWT>` 자리에 넣고 addHospital을 다시 시험해봅니다.
+
+
+![Imgur](https://i.imgur.com/upd3Tqh.png)
+
+
+이런.. Unique constraint가 위반되었다 뜨내요 Contact에서.. 아마 addHospital에서 contact의 기본값을 ""로 넣어주었는데, 이것도 unique한 것으로 취급되어 기존에 입력한 다른 병원이 가진 기본 contact값 ""과 충돌하는 모양입니다. 나중에 수정해주어야겠어요. 우선 unique한 필드인 contact, email에 다른 value들을 넣고 진행합니다.
+
+
+![Imgur](https://i.imgur.com/Nbavzjv.png)
+
+
+이번엔 성공했습니다. Hospital을 만드는데 성공했어요.
+
+
+이런 식으로 resolver들을 만들고 시험해주시면 됩니다.
+
+
+
+---
 
 #### **To-do-list**
 
