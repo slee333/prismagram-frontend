@@ -921,11 +921,9 @@ mutation {
 하지만 GraphQL playground에는 이런 header를 만들수 있는 기능이 내장되어 있습니다. 방법은 다음과 같습니다.
 
 
+저희가 GraphQL mutatino이나 query를 입력하는 칸 아래에 http headers라 써진 부분이 보이시나요?
+
 ![Imgur](https://i.imgur.com/zUPuIIR.png)
-
-
-저희가 GraphQL mutatino이나 query를 입력하는 칸 아래에 http headers라 써진 부분이 보이시나요? 여기다
-
 
 ```
 {
@@ -945,7 +943,7 @@ mutation {
 ![Imgur](https://i.imgur.com/upd3Tqh.png)
 
 
-이런.. Unique constraint가 위반되었다 뜨내요 Contact에서.. 아마 addHospital에서 contact의 기본값을 ""로 넣어주었는데, 이것도 unique한 것으로 취급되어 기존에 입력한 다른 병원이 가진 기본 contact값 ""과 충돌하는 모양입니다. 나중에 수정해주어야겠어요. 우선 unique한 필드인 contact, email에 다른 value들을 넣고 진행합니다.
+이런.. Unique constraint가 위반되었다 뜨네요 Contact에서.. 아마 addHospital에서 contact의 기본값을 ""로 넣어주었는데, 이것도 unique한 것으로 취급되어 기존에 입력한 다른 병원이 가진 기본 contact값 ""과 충돌하는 모양입니다. 나중에 수정해주어야겠어요. 우선 unique한 필드인 contact, email에 다른 value들을 넣고 진행합니다.
 
 
 ![Imgur](https://i.imgur.com/Nbavzjv.png)
@@ -957,8 +955,276 @@ mutation {
 이런 식으로 resolver들을 만들고 시험해주시면 됩니다.
 
 
+---
+
+## 2.4 Computed Field 만들기
+
+`Computed Field`에 대한 설명을 이전에 적어놓았는데 찾기 힘든 위치에 적어놓은 것 같아 다시 여기다 적을게요.
+
+`Computed Field`에 설명하기 전 `Fragments`에 대한 설명부터 하겠습니다.
+
+
+### 2.4.1 GraphQL - Fragments
+
+
+설명하기 앞서 저희가 참고하는 오픈소스에서는 `fragment` **기능을 사용하지 않습니다**.
+
+
+`Fragment`가 수행하는 기능을 `Computed fields`로 대체하였기 때문인데요. 그래도 `Fragment`가 왜 필요한지 아시면 몇몇 코드들을 이해하는데 도움될거같아 설명을 남겨봅니다.
+
+
+정확하게 `Fragment`는 재사용할수 있는 `query`의 파편이라 생각하시면 됩니다. 이 때문에 복잡한 `query`들을 간단하게 표현하는데 주로 쓰이지만, `query`의 무한 루프로 인해 서버에 과부하가 발생하는 막는 일에도 쓰입니다.
+
+
+**GraphQL**에서 `user`의 `id`와 사용자이름을 `query`한다 치면은:
+
+
+```js
+query {
+  user( id: ~~~ ) {
+    id
+    username
+  }
+}
+```
+
+
+이런식으로 하게 되는데요. 다음과 같은 상황을 상정해볼게요.
+
+
+```js
+query {
+  user( id: ~~~ ) {
+    id
+    comments {
+      id
+      user {
+        id
+        comment {
+          id
+          user { ... }
+        }
+      }
+    }
+  }
+}
+```
+
+
+이런식으로 `query`의 무한루프를 만들게 하는 상황을 GraphQL은 허용하지 않습니다. 실제로 이런식으로 `query`를 해보려 하면 오류가 뜰겁니다.
+
+
+하지만 user.comment로 찾은 comment가 user를 return하지 않는다거나, user.comment.user가 comment를 return하지 않으면 이런식의 무한루프를 방지할 수 있겠죠. 이걸 가능하게 하는게 fragment입니다.
+
+
+예시를 하나 들자면:
+
+
+```js
+// COMMENT_FRAGMENT를 지정해줍니다.
+export const COMMENT_FRAGMENT = `
+    id
+    text
+    user {
+        ${USER_FRAGMENT}
+    }
+`;
+// USER_FRAGMENT를 지정해줍니다.
+export const USER_FRAGMENT = `
+    id
+    username
+    avatar
+`;
+
+// 포스트에 달린 코멘트를 찾는 query가 있다고 칠게요.
+export default {
+  Query: {
+    seeCommentsOnPost: async (_, args) => {
+      const { id } = args;
+      const post = await prisma.post({ id });
+      return prisma
+        .post({ id })
+        .comments()
+        .$fragment(COMMENT_FRAGMENT);
+    }
+  }
+};
+```
+
+
+이렇게 되면 seeCommentOwner라는 query에서는 comment들의 id, text, 그리고 해당 코멘트를 적은 user의 id와 username들만 받게됩니다. id, text, username 등은 다 string이니 이 경우 무한루프가 발생할 수 없습니다.
+
+
+이런 `fragment`들을 저희는 따로 사용하지 않고 대신 computed field 기능을 사용합니다. Computed field가 무엇인지 볼게요.
+
 
 ---
+
+### 2.4.2 Computed Field
+
+`./src/api/User/User.js`를 한번 보겠습니다.
+
+```js
+export default {
+  User: {
+    posts: ({ id }) => prisma.user({ id }).posts(),
+    following: ({ id }) => prisma.user({ id }).following(),
+    followers: ({ id }) => prisma.user({ id }).followers(),
+    likes: ({ id }) => prisma.user({ id }).likes(),
+    comments: ({ id }) => prisma.user({ id }).comments(),
+    rooms: ({ id }) => prisma.user({ id }).rooms(),
+    postsCount: ({ id }) =>
+      prisma
+        .postsConnection({ where: { user: { id } } })
+        .aggregate()
+        .count(),
+```
+
+
+이렇게 `User`에서 얻을 수 있는 정보들을 함수 형태로 지정해주는 것을 `User`의 computed field라고 합니다. 
+
+
+구조가 왜 저런식인지 햇갈리실텐데요. 원래 computed field의 구조는
+
+
+```js
+export default {
+  Like: {
+    post: ( parent, arguments, {request}) => prisma.like({ parent.id }).post(),
+    user: ( parent ) => prisma.like({ parent.id }).user()
+  }
+};
+```
+
+
+이런식입니다. 보시면 아까 다룬 resolver의 js 파일과 구조가 유사합니다. 받는 input이 parent, arguments, context로 resolver와 같죠. Resolver의 js파일 구조를 아래 첨부합니다.
+
+
+```js
+export default {
+  Mutation: {
+    addHospital: async (_, args, { request, isAuthenticated }) => { .... } } }
+```
+
+저희가 필요한건 `parent`의 id 부분입니다. 따라서 `parent` 이후 `argument`, `context` 부분은 받지 않고, parent도 그 자체를 받는 대신 parent 안의 id만을 변수로 지정해 받아옵니다. 그러면 코드는 다음과 같습니다.
+
+
+```js
+export default {
+  Like: {
+    post: ({ id }) => prisma.like({ id }).post(),
+    user: ({ id }) => prisma.like({ id }).user()
+  }
+};
+```
+
+물론 `parent`의 `id`만이 아니라 다른 필드들이 필요하면 이런 식으로 써줄수도 있습니다.
+
+```js
+export default {
+  User: {
+    fullName: parent => `${parent.firstName} ${parent.lastName}`,
+  }
+};
+```
+
+이렇게 computed fields를 이용해서 `fragment` 사용을 피할 수도 있습니다. 또한 데이터 내 특정 필드의 갯수 등 유용한 정보들 역시 compute해서 불러올 수 있습니다. 직접 `Hospital.js`를 만드는 과정을 통해 알아보겠습니다.
+
+
+### 2.4.3 Hospital.js Computed field 만들기
+
+
+우선 prisma client를 불러와줍니다.
+```js
+import { prisma } from "../../../generated/prisma-client";
+```
+
+
+그리고 Hospital의 Computed field 작성을 위한 레이아웃을 잡아주고요.
+
+
+```js
+import { prisma } from "../../../generated/prisma-client";
+
+export default {
+  Hospital: {
+    
+    }
+  }
+};
+```
+
+그리고 patient, staffs, rooms 등 다른 객체를 return해야 하는 query들을 우선적으로 computed field를 통해 제어해줍니다. 
+
+```js
+export default {
+  Hospital: {
+    patients: ({ id }) => prisma.hospital({ id }).patients(),
+    staffs: ({ id }) => prisma.hospital({ id }).staffs(),
+    rooms: ({ id }) => prisma.hospital({ id }).rooms(),
+    admin: ({ id }) => prisma.hospital({ id }).admin(),
+    files: ({ id }) => prisma.hospital({ id }).files(),
+    }
+  }
+};
+```
+
+
+이후 크게 두가지 기능을 추가하겠습니다. 하나는 환자와 스태프 숫자를 새는 computed field이고, 나머지 하나는 지금 접속한 `User`가 해당 병원의 `admin`인지 알아보는 기능입니다.
+
+
+우선 카운트 기능부터 추가해보겠습니다.
+
+
+```js
+    patientsCount: ({ id }) =>
+      prisma
+        .usersConnection({ where: { patientof_some: {id } } })
+        .aggregate()
+        .count(),
+```
+
+Prisma client에서 제공하는 함수 usersConnection은 User
+
+For to-many relations, three additional arguments are available: every, some and none, to define that a condition should match every, some or none related nodes.
+```js
+```
+
+```js
+```
+
+```js
+
+export default {
+  Hospital: {
+    patients: ({ id }) => prisma.hospital({ id }).patients(),
+    staffs: ({ id }) => prisma.hospital({ id }).staffs(),
+    rooms: ({ id }) => prisma.hospital({ id }).rooms(),
+    admin: ({ id }) => prisma.hospital({ id }).admin(),
+    files: ({ id }) => prisma.hospital({ id }).files(),
+    patientsCount: ({ id }) =>
+      prisma
+        .usersConnection({ where: { patientof_some: {id } } })
+        .aggregate()
+        .count(),
+    staffsCount: ({ id }) =>
+      prisma
+      .usersConnection({ where: { staffof_some: { id } } })
+        .aggregate()
+        .count(),
+    isYours: async (parent, _, { request }) => {
+      // 이 병원의 Admin이 나인지 알아보기 위한 코드. 수정이 필요함
+      const { user } = request;
+      const { id: parentId } = parent;
+      const ADMIN = await prisma.hospital({ id: parentId }).admin();
+      return user.id === ADMIN.id;
+    }
+  }
+};
+
+```
+
+
 
 #### **To-do-list**
 
