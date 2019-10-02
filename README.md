@@ -7,7 +7,11 @@
 
 **npm** / **yarn**: 둘 다 package를 manage해주는데 역할은 같다고 알아요. npm을 써도 무방하지만 체감상 속도가 빨라서 저는 yarn을 쓰고 있어요.
 
-node.js와 npm 혹은 yarn은 서버를 돌리는데, 또 패키지들을 관리하는데 필요하니 꼭 설치해주세요.
+**git** 터미널(VS Code 터미널, Git Bash, 윈도우 파워셸/커맨드라인 등)에서 깃허브에 Commit, Push, Pull 등을 하기위해 필요합니다. 처음에 리포지토리를 clone 하는데도 필요하고요.
+
+
+위의 세 종류 프로그램은 꼭 설치해주세요!
+
 
 프론트엔드가 실행되는 모습은 Netlify[https://hgroundtest.netlify.com]에서 확인하실 수 있습니다.
 
@@ -17,22 +21,177 @@ node.js와 npm 혹은 yarn은 서버를 돌리는데, 또 패키지들을 관리
 
 ## 1.1 백엔드 설치하기
 
+##### 깃허브 폴더 받아오기
 
-## 1.2 프론트엔드 설치하기
+아직 받지 않으셨다면, 백엔드 깃허브 리포지토리[https://github.com/slee333/prismagram]에서 백엔드를 받아주세요. 방법은 다음과 같습니다.
+
+우선 터미널 (혹 커맨드라인) 내에서 프로젝트를 집어놓고 싶은 폴더 내로 이동합니다. 
+
+
+(예를 들어 저는 ~Documents/Projects 폴더에 설치했습니다.)
+
+
+그리고 아래 커맨드를 실행해서 리포지토리를 다운받아주세요. 그리고 cd 커맨드를 통해 해당 리포지토리 내로 이동합니다.
+
+
+```
+git clone https://github.com/slee333/prismagram.git
+cd prismagram
+```
+
+
+##### 패키지 설치하기
+
+이제 프로젝트를 구동하는데 필요한 패키지 (일종의 자바스크립트 라이브러리)와 프리즈마 클라이언트를 설치할 차례입니다. 우선 아래 커맨드를 실행하여 패키지를 설치합니다.
+
+
+```
+yarn install
+OR
+npm install
+```
+
+이러면 패키지들이 설치됩니다. 다소 시간이 걸릴 수 있어요. (사실 yarn install 말고 그냥 yarn만 쳐도 똑같이 패키지 인스톨 과정이 실행되요.)
+
+
+##### 프리즈마 클라이언트 설치
+
+yarn 혹은 npm을 이용해 패키지를 설치했다면, 이제 프리즈마 클라이언트를 설치할 차례입니다. 
+
+
+- **프리즈마**는 데이터베이스 관리도구 및 UI라 생각하시면 편합니다. 
+
+
+- **프리즈마 클라이언트**는 프리즈마에 접근할 수 있도록 해주는 자바스크립트 라이브러리입니다.
+
+
+프리즈마를 설치하기 이전, 우선 슬랙에 있는 .env 파일이 필요합니다. 슬랙 > 백엔드방에 있는 해당 파일을 다운받아서 프로젝트 폴더에 넣어주세요. (datamodel.prisma, prisma.yml 등과 같은 폴더에 넣어주시면 됩니다.)
+
+
+이후 다음 커맨드를 이용해 프리즈마 클라이언트를 설치해줍니다.
+
+
+```
+prisma generate
+```
+
+
+제가 백엔드 해설 적을때는 *prisma deploy* 이후 *prisma generate*를 해야한다 적었는데요. 다시보니 prisma deploy는 현재 가지고 있는 데이터모델을 서버에다 올리는 작업을 합니다. 다시 말해 이미 데이터모델이 서버에 올라갔다면 굳이 실행할 이유가 없는 커맨드입니다. 따라서 prisma generate만 실행해줍니다.
+
+
+혹시 이 과정에서 로그인을 하라고 한다면 마찬가지로 Slack에 백엔드방에 올려놓은 프리즈마 계정을 입력하시면 될 것 같습니다.
+
+
+제가 이전에는 prisma.yml 파일이 prisma endpoint라는 데이터베이스에 직접적인 엑세스를 가지는 링크를 가지고 있어 깃허브에 올라가 있지 않다 말씀드렸습니다. 
+
+
+그런데 지금 이 리포지토리에서 보시면 prisma.yml이 올라가 있는데요. prisma endpoint를 prisma.yml 파일 내에 직접 적어두는게 아니라 .env 파일 안에 넣어두어서 그렇습니다.
+
+##### 백엔드 구동하기
+
+이제 백엔드 구동에 필요한 요소들은 설치가 완료되었습니다. 백엔드를 실행하려면 다음 커맨드를 입력합니다.
+
+
+```
+yarn dev
+```
+
+
+그러면 이제 인터넷 URL에 localhost:4000를 치시면 GraphQL Playground가 뜹니다.
+
+
+GraphQL playground를 통해 서버 내 데이터들을 수정도 해보고 DB를 수정하는 커맨드들을 실행도 해보고 할 수 있어요.
+
+
+예를 들어 데이터베이스 내 유저를 검색하는 query를 실행해보겠습니다. localhost:4000을 들어가서 Playground를 실행해주시고 거기 뜨는 창에 다음과 같은 커맨드를 실행해주세요.
+
+```js
+query {
+  seeUser (username:"ghouse") {
+    id
+    fullName
+    bio
+    createdAt
+    adminof {
+      id
+      name
+    }
+    staffof {
+      name
+    }
+  }
+}
+```
+
+그러면 아마 다음과 같은 데이터를 받을겁니다.
+```json
+{
+  "data": {
+    "seeUser": {
+      "id": "ck18ini0o000d071364eysphw",
+      "fullName": "Gregory House",
+      "bio": "Gregory House, M.D. (born 1959) is the title character of the American medical drama series House. Created by David Shore and portrayed by English actor Hugh Laurie, he leads a team of diagnosticians as the Head of Diagnostic Medicine at the fictional Princeton-Plainsboro Teaching Hospital in Princeton, New Jersey.",
+      "createdAt": "2019-10-02T00:12:03.127Z",
+      "adminof": [],
+      "staffof": [
+        {
+          "name": "삼성서울병원"
+        }
+      ]
+    }
+  }
+}
+```
+
+
+창 자체는 이렇게 뜰거에요.
+[Imgur](https://i.imgur.com/hfmllVz.png)
+
+
+이런식으로 그래프큐엘 플레이그라운드 내에서는 저희가 만든 쿼리들, 혹은 뮤테이션들을 이용해서 어떻게 데이터를 조회하거나 변형할 수 있는지 시험해 볼 수 있습니다. 나중에 이런 쿼리들을 프론트엔드에서도 실행해서 저희가 원하는 데이터를 서버로부터 불러올텐데, 어떻게 쿼리를 짜서 데이터를 원하는 모양으로 불러올지 등을 플레이그라운드를 통해 테스트할 수 있습니다.
+
+
+GraphQL에 관해 자세한 내용은 백엔드[https://github.com/slee333/prismagram] 리포지토리의 README.MD 파일에서 2.2.1번 목차를 참고해주세요.
+
+
+##### 데이터 생성하기
+
+
+데이터를 만드는건 GraphQL Playground를 통해서도 할 수 있지만 아니라 프리즈마 사이트에서도 만들 수 있습니다.
+
+
+프리즈마 웹사이트[https://prisma.io] 접속 후 로그인 > 좌측 상단에서 드롭다운 메뉴 클릭 후 dhh10-workspace 선택 > hground-test 선택.
+
+
+이렇게 해서 hground-test라는 프리즈마 서비스에 들어가면 저희 데이터베이스를 한눈에 보실 수 있습니다. 이런 창이 뜰겁니다.
+
+
+[Imgur](https://i.imgur.com/4SS6wWo.jpg)
+
+
+여기에서 저희 데이터를 직접 만져줄 수 있는데요. 10/02일 현재 사용자의 프로필 사진을 바꿀 수 있는 기능이 저희 프론트엔드에 아직 없습니다. 따라서 제 경우 아래와 같이 프로필 사진을 직접 바꾸어주었습니다.
+
+
+[Imgur](https://i.imgur.com/b01Jrqy.jpg)
+
+
+
+## 1.2 프론트엔드 설치하기 (작업중)
 
 
 To-do-list
 
 1. 설치 ~ 실행 후 로그인. 이하 기능들.
-  - 백엔드 실행법도 다시 추가해야
+  - [X] 백엔드 실행법
+  - [ ] 프론트엔드 실행법
 2. hospital profile 만든 과정
-  - datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
-  - Resolver 만들기
-  - Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
-  - 이후 Front end로 넘어옴
-  - Routes에서 hosptial profile로 넘어가는 route 만들기
-  - Header에서 해당 route로 연결해주는 링크 만들기?
-  - ProfilePresenter, Container 역할 + 디자인
+  - [ ] datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
+  - [ ] Resolver 만들기
+  - [ ] Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
+  - [ ] 이후 Front end로 넘어옴
+  - [ ] Routes에서 hosptial profile로 넘어가는 route 만들기
+  - [ ] Header에서 해당 route로 연결해주는 링크 만들기?
+  - [ ] ProfilePresenter, Container 역할 + 디자인
 
 ---
 # 1. 설치하기
@@ -171,3 +330,12 @@ Glboalstyles: Global Styles.
 
 
 Hooks: Hooks는 src/Hooks에서 가져옴. 애초에 useInputs.js밖에 없음
+
+
+
+## heroku
+```
+heroku login
+heroku git:remote -a hground-backend
+git push heroku master
+```
