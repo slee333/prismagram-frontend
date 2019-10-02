@@ -973,7 +973,7 @@ mutation {
   - 백엔드
   - [X] 레이아웃 설명
   - [X] datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
-  - [ ] Resolver 만들기
+  - [X] Resolver 만들기
   - [ ] Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
 
 
