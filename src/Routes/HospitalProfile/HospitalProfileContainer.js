@@ -45,9 +45,7 @@ export const LOG_OUT = gql`
   }
 `;
 
-// props: { match: { params : { username }}} 형식으로 Routes에서 받기 때문에 input을 이런식으로 정의해줍니다.
 export default withRouter(({ match: { params: { name } } }) => {
-  // 바로 username으로 query하는데 써먹어주기 위해서요.
 
   const { data, loading } = useQuery(GET_HOSPITAL, {
     variables: { name }

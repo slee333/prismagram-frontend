@@ -952,7 +952,7 @@ mutation {
 이번엔 성공했습니다. Hospital을 만드는데 성공했어요.
 
 
-이런 식으로 resolver들을 만들고 시험해주시면 됩니다.
+Resolver들을 만들고 시험하실 때 이런식으로 하면 될겁니다.
 
 
 ---
@@ -1274,6 +1274,10 @@ export default {
 ```
 
 
+이렇듯 Resolver를 만들 때도 Computed field를 만들 때도 Prisma Client를 이용해야 하는데, 지금까지 저희 앱에서 다룬 형태 말고도 다른 형태가 필요한 경우도 있을 수 있습니다. 그럴 경우 [prisma documentation](https://www.prisma.io/docs/reference/prisma-api/queries-ahwee4zaey)을 참고해주세요. 1.14 버전 다큐멘테이션인데 어쩐지 최신 다큐멘테이션에선 Query를 찾을수가 없네요..
+
+
+
 ### 2.4.4 models.graphql 수정하기
 
 
@@ -1362,24 +1366,255 @@ Required 표시 (`!`)를 붙여놓은 이유는 이 필드들은 별다른 input
 
 컴포넌트를 구성하는데 필요한 코드 양이 많아 별도의 폴더를 구성해서 분리한건데요. 이렇게 하지 않고 파일 하나에 모든 코드를 다 넣어도 전혀 상관없습니다.
 
-
-## 3.1 Hospital profile 페이지 만들기
-
-
-HospitalProfile이란 컴포넌트가 없다고 가정하고 처음부터 한번 만들어 볼게요.
-
-
-우선 Routes 폴더 안에 HosptialProfile.js를 만들어줍니다.
+---
+## 3.1 Hospital profile로 넘어가는 Route 만들기 + 링크 정해주기
 
 
 
-## 3.2 Hospital profile로 넘어가는 Route 만들기 + 링크 정해주기
+HospitalProfile이란 컴포넌트를 불러오는 과정을 보여드리기 위해 파일을 새로 하나 만들어볼게요.
 
-## 3.3 컴포넌트 디자인
 
-### 3.3.1 Container 만들기
+Routes 폴더 안에 `Test.js`를 만들어줍니다. 그리고 그 안에 다음과 같이 써줄게요.
 
-### 3.3.2 Presenter 만들기
+
+```js
+export default () => "시험용입니다";
+```
+
+
+그리고 나서는 이 `Test.js`를 불러오는 url을 만들어주어야 합니다. `./src/Components/Routes.js`로 가실게요.
+
+
+Routes.js 안에는 여러 요소들이 있습니다. 그 중 제일 주목해야 할건 `LoggedInRoutes`라는 함수인데요. 사용자가 로그인 했을시, 어떤 url을 타면 어떤 component를 볼 수 있는지를 정의합니다.
+
+```js
+const LoggedInRoutes = () => (
+  <Switch>
+    <Route exact path="/" component={Feed} />
+    <Route path="/explore" component={Explore} />
+    <Route path="/search" component={Search} />
+    <Route path="/notifications" component={Notifications} />
+    <Route path="/user/:username" component={Profile} />
+    <Route path="/hospital/:name" component={HospitalProfile}/>
+    <Redirect from="*" to="/" />
+  </Switch>
+);
+```
+
+
+여기서 보면 보시다시피 `Feed`, `Explore`, `Profile` 등 다양한 컴포넌트들로 향할 수 있는 url들이 표시되어 있습니다.
+
+
+예를 들어, `localhost:3000/#/explore`를 한다면 `explore` 컴포넌트로, `.../search`를 하면 `search` 컴포넌트로 안내받는 식이죠. (저 #이 왜 붙어야 하는진 아직 알아보는 중입니다.)
+
+
+따라서 잠깐 동안만 여기다 `Route`을 하나 더 추가하겠습니다.
+
+
+```js
+import Test from "../Routes/Test";
+
+const LoggedInRoutes = () => (
+  <Switch>
+    <Route exact path="/" component={Feed} />
+    <Route path="/explore" component={Explore} />
+    <Route path="/search" component={Search} />
+    <Route path="/notifications" component={Notifications} />
+
+    {/*요기!*/} 
+    <Route path="/test" component={Test} />
+
+
+    <Route path="/user/:username" component={Profile} />
+    <Route path="/hospital/:name" component={HospitalProfile}/>
+    <Redirect from="*" to="/" />
+  </Switch>
+);
+```
+
+Routes 폴더 안의 Test 컴포넌트를 import한 후, Route을 통해 로그인 이후 /test란 url이 주어지면 Test 컴포넌트를 보여주도록 설정하였습니다. 그러면 이제 프론트엔드로 돌아가 로그인 한 후 url에다 /test를 쳐보겠습니다.
+
+
+![Imgur](https://i.imgur.com/PqU3XWT.png)
+
+
+그러면 이렇게 저희가 디자인한 컴포넌트가 페이지 상에 나타납니다!
+
+
+병원 프로필 페이지도 이렇게 마찬가지 방법으로 호스팅됩니다. 차이가 있다면, 병원 프로필 페이지 url은 정해져 있지 않고 병원의 이름에 따라 유동적이란 점입니다. 이 점에서 사용자 프로필과 유사합니다.
+
+
+따라서 병원 프로필 페이지로 향하는 Route은 다음과 같이 정의됩니다:
+
+```js
+  <Route path="/hospital/:name" component={HospitalProfile}/>
+```
+
+
+url로 `/hospital/:name`이 주어지면, `/hospital/` 이후에 위치하는 String을 name이란 변수로 받아 HospitalProfile 이란 컴포넌트를 보여주는 방식입니다. 지금부터 좀 더 자세히 살펴보겠습니다.
+
+
+---
+
+## 3.2 컴포넌트 디자인: 개요
+
+
+이제 Test.js와 관련된 코드들은 삭제하고 본격적으로 HosptialProfile 컴포넌트를 살펴보도록 할게요.
+
+
+우선 `./src/Routes/HospitalContainer` 폴더로 가시면
+
+
+1. index.js
+2. HospitalProfileContainer.js
+3. HospitalProfilePresenter.js
+
+
+이 세 파일이 있습니다. 각각 어떤 역할을 맡고있냐 하면...
+
+
+1. index.js: 
+    - HospitalContainer를 export합니다.
+
+
+2. HospitalProfileContainer.js: 
+    - URL로부터 변수를 받습니다. (이 경우엔 URL에 주어지는 `name`)
+    - 병원 프로필을 보여주는데 필요한 데이터를 불러옵니다. 이 경우엔 seeHospital이란 Resolver를 이용합니다. (그냥 Hospital 객체의 name을 넣어주면 해당 Hospital 객체를 return하는 아주 간단한 resolver입니다.)
+    - 데이터를 불러오는 중인지 알려주는 Loading과 실제 병원의 데이터인 data를 갖게 되는데, 이 두 정보를 HospitalProfilePresenter에 넘겨줍니다.
+    - 위 세가지 행동을 모두 행하는 함수를 export합니다.
+
+
+3. HospitalProfilePresenter.js
+    - 실제 병원 프로필을 꾸미고 보여주는 코드입니다.
+    - 각 컴포넌트들을 스타일링합니다.
+    - Container에서 받은 데이터들을 기반으로 컴포넌트들을 배치합니다.
+
+
+각각 이 정도 역할을 맡고 있습니다.
+
+
+대형 컴포넌트의 구조가 꼭 이렇게 정형화되어있지는 않습니다. 예를 들어 Container에선 query를 정의해주게 되는데 이런 query가 너무 길어지게 되면 다른 파일로 분리할 수도 있겠죠. (`./src/Routes/Auth` 참조)
+
+
+그러면 이제 Container와 Presenter에 있는 코드들을 설명하도록 하겠습니다. 저도 처음부터 다 만든게 아니고 `./src/Routes/Profile` 에서 파일들을 긁어와 수정하였습니다.
+
+
+## 3.3 컴포넌트 디자인: Container
+
+
+HospitalProfileContainer.js를 설명해볼게요.
+
+### 3.3.1 Query 
+
+우선 이 코드의 역할은 서버로부터 URL에 주어진 `name`과 같은 `name`을 갖는 `Hospital` 객체를 찾아오는 것입니다. 때문에 query를 정의 해 줍니다.
+
+```js
+import { gql } from "apollo-boost";
+
+const GET_HOSPITAL = gql`
+  query seeHospital($name: String!) {
+    seeHospital(name: $name) {
+      id
+      name
+      bio
+      files {
+        url
+        id
+      }
+      location
+      staffs {
+        id
+        avatar
+        fullName
+        username
+        isSelf
+        bio
+      }
+      admin {
+        id
+        avatar
+        fullName
+        username
+        isSelf
+        bio
+      }
+      isYours
+      staffsCount
+      patientsCount
+    }
+  }
+`;
+```
+
+
+이게 아폴로를 이용해 GraphQL query를 짜는 방식입니다. 아폴로에서 `gql` 함수를 불러온 후, gql`  ` <- 이 사이에 우리가 불러오기를 원하는 GraphQL query나 mutation을 써넣어주면 됩니다. 불러오길 원하는 resolver를 써준다고 생각하면 되겠네요.
+
+
+- `gql` 함수는 우리가 정의한 String 형태의 query를 parse해서 query document로 만들어줍니다.
+
+
+위 경우에는 seeHosptial이란 query를 해주는 resolver를 사용해서 병원의 데이터를 받아오는 query를 만든 모습입니다. 저기 `$` 표시는 왜 쓰는건지 저도 정확히는 모르지만 [아폴로 문서](https://www.apollographql.com/docs/react/data/queries/)에 저런 식으로 되어있습니다.
+
+
+제 생각에는 나중에 받아오는 변수를 뜻하는 거 같은데요. `query seeHospital($name: String!)` 부분에서 변수가 String이 맞는지 확인하고, `seeHospital(name: $name) {...}` 부분에서 name 필드에 변수로 주어진 name을 넣어 (`$name`) query를 진행하는 것 같습니다만 공식 문서에서 해당 내용을 찾지는 못했습니다. 그냥 제 추측입니다.
+
+
+아무튼 이렇게 만들어진 query는 나중에 useQuery를 이용해서 사용할 수 있습니다. 지금 해당 내용을 보실게요.
+
+
+### 3.3.2 HospitalProfilePresenter return하기
+
+`HospitalProflieContainer.js` 마지막 부분은 이렇게 구성되어 있습니다.
+
+```js
+export default withRouter(({ match: { params: { name } } }) => {
+
+  const { data, loading } = useQuery(GET_HOSPITAL, {
+    variables: { name }
+  });
+
+  const logOut = useMutation(LOG_OUT);
+  
+  return (
+    <HospitalProfilePresenter
+      loading={loading}
+      logOut={logOut}
+      data={data}
+    />
+  ); // 로딩 여부, 로그아웃 기능, 데이터를 ProfilePresenter에 Prop 으로 전달.
+});
+```
+
+
+보시면 함수의 input 부분이 상당히 복잡한 모습을 보실 수 있습니다. withRouter 함수의 기능은 [이 링크](https://stackoverflow.com/questions/53539314/what-is-withrouter-for-in-react-router-dom)에 설명되어 있는데요. header처럼 모든 페이지에 존재해 원래라면 사용자를 redirect 할 수 없는 컴포넌트가 사용자를 redirect 할 수 있도록 하기 위해서 쓰인다 합니다.
+
+
+지금 사용하고 있는 HospitalProfileContainer의 경우 Header처럼 모든 페이지에 존재하지는 않지만, parameter로 주어지는 name에 따라 다른 페이지를 랜더링해야 하기 때문에 withRouter 기능을 쓰지 않았나 생각합니다. 이 부분은 더 공부해보고 나은 설명이 있으면 추가하겠습니다.
+
+
+아무튼 함수를 하나하나 뜯어보면,
+
+```js
+export default withRouter(({ match: { params: { name } } }) => { ... }
+```
+
+withRouter를 사용해 URL로부터 input을 받아올 시 `{ match: { params: { name: ~~, other: ~~~}, ...} ... }` 이런식으로 input이 주어지나 봅니다. 따라서 몇 겹의 객체들 안에 싸여 있는, 저희가 사용해야하는 변수 name을 바로 빼주기 위해 `{ match: { params: { name } } }` 이란 형태로 input을 정의해 준 것 같습니다.
+
+
+이후 앞서 정의한 GET_HOSPITAL이란 query를 useQuery를 이용해 사용. Variable로는 name을 넣고,
+
+
+Query의 결과로 받아온 data와 data가 로드되었는지 여부를 알려주는 loading을 output으로 받아옵니다.
+
+
+그리고 data와 loading을 props 형태로 HospitalProfilePresenter에 넣어줍니다.
+
+
+제가 급히 나가볼 일이 있어 여기까지 하고 마무리하는데, 나머지 부분은 내일 마무리하도록 하겠습니다.
+
+## 3.4 컴포넌트 디자인: Presenter
+
+Presenter
 
 
 
@@ -1405,8 +1640,8 @@ HospitalProfile이란 컴포넌트가 없다고 가정하고 처음부터 한번
 
 
   - 프론트앤드
-  - [ ] Routes에서 hosptial profile로 넘어가는 route 만들기
-  - [ ] Header에서 해당 route로 연결해주는 링크 만들기?
+  - [X]] Routes에서 hosptial profile로 넘어가는 route 만들기
+  - [X] Header에서 해당 route로 연결해주는 링크 만들기?
   - [ ] 컴포넌트 디자인
     - Container 만들기
     - Presenter 만들기 
