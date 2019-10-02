@@ -280,11 +280,244 @@ yarn start
 
 일단 제가 만들어놓은 병원 프로필 페이지 레이아웃은 (프런트엔드와 백엔드를 둘 다 구동중이시라면) http://localhost:3000/#/hospital/삼성서울병원 에서 확인하실 수 있습니다. 또는 제가 프론트엔드를 배포중인 링크인 https://hgroundtest.netlify.com/#/hospital/삼성서울병원 에서도 확인하실 수 있고요.
 
-
+---
 ## 2.1 참고용 레이아웃
 
-우선 제가 
+우선 제가 참고한 레이아웃은 [브런치](https://brunch.co.kr/@soyuly)입니다. 브런치에서 개인 프로필에 들어가면
 
+1. 작가소개
+2. 글
+3. 작품
+
+이렇게 3가지 상단 탭이 존재하는데요. 이와 유사한 구조로 병원 프로필 페이지 역시
+
+1. 병원 소개
+2. 병원 포스트
+3. 병원 내 커뮤니티 기능?
+
+등으로 구성을 목표했습니다.
+
+또한 어플리케이션 중 '강남언니'에서 병원 정보를 찾아봤을 시 나오는 정보 페이지 역시 참고했습니다.
+
+---
+
+## 2.2 데이터모델 만들기
+
+우선 병원 프로필 페이지를 구성하는데 필요한 데이터를 구성해야합니다. 먼저 병원이란 객체가 어떻게 구성되어 있을지를 정의해야 하는데요.
+
+
+병원이란 객체가 가져야 할 기능들 및 정보는 다음과 같습니다.
+
+- 이름
+- 주소
+- 소개
+- 연락처 (이메일 혹은 전화번호)
+- 병원 사진 (배경사진)
+- (병원 측에서 올리는) 포스트
+- 병원 프로필 사진
+- 병원 관리자, 소속 의료진, 소속 환자 명단
+
+일단 이 정도가 있겠는데요.
+
+
+병원 데이터에 이런 요소들이 포함되어야 한다는 사실을 알았으니 이제 병원 데이터모델을 한번 짜 보겠습니다.
+
+### 2.2.1 datamodel.prisma
+
+**백엔드** 폴더 안에서 datamodel.prisma를 찾아 열어줍니다. [백엔드 리포지토리](https://github.com/slee333/prismagram)에 2.1.3 부분을 보시면 이해에 도움되실거에요.
+
+
+우선 병원이라는 데이터 객체를 정의해주겠습니다.
+
+
+```java
+type Hospital {
+  id: ID! @id
+}
+```
+
+
+여기서 id는 저희가 정의해주는게 아니라 병원이라는 객체가 생성될 시 자동으로 생성됩니다.
+
+
+#### 이름, 소개, 병원 연락처 필드 추가
+
+
+앞서 병원이라는 데이터 객체 안에 들어갈 요소들로 이름, 주소, 병원 소개, 병원 연락처 (이메일 혹은 전화번호)가 있었는데요. 해당 요소들을 추가해주겠습니다.
+
+
+```java
+type Hospital {
+  id: ID! @id
+  location: String
+  bio: String
+  name: String! @unique
+  email: String @unique
+  contact: String @unique
+}
+```
+
+> location: String
+
+
+위치는 "모모시 모모구 모모동..." 과 같이 `String`으로 정의될테니 `String`이라 정의해줍니다. 병원 소개글을 뜻하는 `bio` 역시 마찬가지입니다.
+
+> name: String! @unique
+
+병원 이름 역시 `String`인데 끝에 `unique`가 붙어 있습니다. 
+
+
+병원 이름은 고유해야 하니 붙여 놓았습니다. 이렇게 할 시 같은 이름을 가진 병원을 또 하나 더 만들려 하면 "이미 존재하는 병원 이름입니다"며 에러가 뜨게 됩니다.
+
+
+또한 `String` 뒤에 느낌표 (!) 가 붙어있는데, 이는 해당 요소가 필수라는 사실을 의미합니다. 병원이라는 데이터 객체를 만들 때엔 `name`이라는 필드에 무엇인가 반드시 필요하다는 의미입니다.
+
+
+이메일과 연락처 역시 고유해야 하지만 필수는 아니기에 !는 붙이지 않았습니다.
+
+
+#### 병원 사진 추가
+
+데이터모델 파일 내에는 `file`이란 객체가 있습니다. 이 객체를 살펴보면 
+
+```js
+type File {
+  id: ID! @id
+  url: String!
+  post: Post @relation(name: "FilesOfPost")
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+```
+
+이렇게 되어있는데요. 파일 url을 저장하고 있는, `post`와 연결되는 객체입니다. 파일 url을 전달하는 객체라 생각하시면 됩니다. 이론적으론 어떤 종류의 파일이건 url을 통해 전달할 수 있겠지만 일단은 이미지 url을 집어넣어 사진을 전달하는 용도로 쓸 수 있다 정도만 알면 될 것 같습니다.
+
+
+병원 내 인테리어 사진 등을 정보 페이지에 띄워야 하니 병원 객체 안에 파일이라는 필드도 추가해줍니다. 마찬가지로 파일 객체 안에도 병원이라는 필드를 추가해줍니다. 
+
+
+```java
+type Hospital {
+  id: ID! @id
+  location: String
+  bio: String
+  name: String! @unique
+  email: String @unique
+  contact: String @unique
+  files: [File!]! @relation(name: "FilesOfHospital", onDelete: CASCADE)
+}
+
+type File {
+  id: ID! @id
+  url: String!
+  post: Post @relation(name: "FilesOfPost")
+  hospital: Hospital @relation(name: "FilesOfHospital")
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+```
+
+병원과 파일 객체 안에 파일과 병원 필드를 추가했습니다. 하지만 `relation`을 비롯해서 생소한 내용들이 보이는데요. 더 자세히 살펴보겠습니다.
+
+
+>     files: [File!]! @relation(name: "FilesOfHospital", onDelete: CASCADE)
+
+- 병원이란 객체 안에 files란 필드는 파일들의 array를 가집니다. 따라서 `File`이 아닌 `[File!]!`을 사용해서 `array` 형태로 정의해줍니다.
+
+- 여기서 우리는 `Hospital`과 `File` 간의 관계를 정의한다 볼 수 있는데요. 이렇게 한 객체를 다른 객체의 field로서 정의할 경우에 **prisma**에선 이 관계를 정의해주어야 합니다. 
+
+- 관계의 정의는 `@relation(name: "~~~~~")`을 통해 이루어집니다. 각 관계에는 이 경우와 같이 이름이 필요합니다. 용도를 알 수 있도록 지어줍니다. 
+
+- 때문에 병원 객체 내 files와 File 객체 내 hospital에 관계를 동일한 이름으로 (`@relation(name: "FilesOfHospital")`) 추가해줍니다.
+
+- `onDelete: CASCADE` 부분은 병원 데이터 객체가 삭제되었을 시 이 병원과 관계를 맺고 있던 파일들을 어떻게 처리할지를 정의합니다. 이 경우 `CASCADE`라 정의하였는데, 병원이 삭제될 시 이 병원과 관계를 맺고 있든 파일들도 함께 삭제한다는 의미입니다.
+
+
+#### 병원 포스트 추가
+
+마찬가지로 병원에서 올리는 포스트들도 있을테니 앞에서 파일을 추가한 것과 같은 요령으로 추가해줍니다.
+
+```java
+type Hospital {
+  id: ID! @id
+  location: String
+  bio: String
+  name: String! @unique
+  email: String @unique
+  contact: String @unique
+  files: [File!]! @relation(name: "FilesOfHospital", onDelete: CASCADE)
+  posts: [Post!]! @relation(name:"PostsOfHospital", onDelete: CASCADE)
+}
+
+type Post {
+  id: ID! @id
+  location: String
+  caption: String!
+  user: User @relation(name: "PostsOfUser")
+  hospital: Hospital @relation(name:"PostsOfHospital")
+  files: [File!]! @relation(name: "FilesOfPost", onDelete: CASCADE)
+  
+  (...이하 생략)
+  }
+}
+```
+
+마찬가지로 files 필드를 추가한 것과 같은 요령으로 Hospital 객체 내에 Post를 추가해줍니다.
+
+이 경우 `@relation(name: "PostsOfHospital")`라는 관계를 추가해주었네요.
+
+#### 병원 프로필 사진 추가
+
+
+이제 병원의 프로필 사진을 추가할 차례입니다. `avatar`라는 이름으로 병원 객체 내에 필드를 하나 추가해줍니다.
+
+
+```java
+type Hospital {
+  id: ID! @id
+  avatar: String 
+    @default(
+      value:"https://image.flaticon.com/icons/svg/1546/1546074.svg"
+    )
+  location: String
+  bio: String
+  name: String! @unique
+  email: String @unique
+  contact: String @unique
+  files: [File!]! @relation(name: "FilesOfHospital", onDelete: CASCADE)
+  posts: [Post!]! @relation(name:"PostsOfHospital", onDelete: CASCADE)
+}
+```
+
+`avatar`은 `String`으로 병원 프로필 사진 url을 보관하는 필드입니다.
+
+
+여기서 `@default(value: XXX)`은 해당 필드의 기본값을 지정해주는데, 저는 병원의 벡터 이미지를 하나 골라서 넣어놓았어요.
+
+#### 병원 소속 관리자, 의료진, 환자 명단
+
+#### models.graphql
+
+```java
+type Hospital {
+  id: ID! @id
+  avatar: String 
+    @default(
+      value:"https://image.flaticon.com/icons/svg/1546/1546074.svg"
+    )
+  location: String
+  bio: String
+  posts: [Post!]! @relation(name:"PostsOfHospital", onDelete: CASCADE)
+  files: [File!]! @relation(name: "FilesOfHospital", onDelete: CASCADE)
+  rooms: [Room!]!
+  name: String! @unique
+  email: String @unique
+  contact: String @unique
+  admin: User! @relation(name: "AdminOfHospital")
+  staffs: [User!]! @relation(name: "StaffOfHospital")
+  patients: [User!]! @relation(name: "PatientOfHospital")
+}
+```
 
 
 To-do-list
@@ -293,6 +526,7 @@ To-do-list
   - [X] 백엔드 실행법
   - [X] 프론트엔드 실행법
 2. hospital profile 만든 과정
+  - [X] 레이아웃 설명
   - [ ] datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
   - [ ] Resolver 만들기
   - [ ] Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
@@ -304,7 +538,7 @@ To-do-list
 ---
 # 1. 설치하기
 
-백엔드를 우선 실행해주세요. (백엔드 실행 관련해서는 백엔드 리포를 참조해주세요)
+백엔드를 우선 실행해주세요. (백엔드 실행 관련해서는 [백엔드 리포지토리](https://github.com/slee333/prismagram)를 참조해주세요)
 그러면 GraphQL 백엔드가 localhost:4000에서 돌아갈텐데요.
 
 
