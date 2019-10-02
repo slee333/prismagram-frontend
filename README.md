@@ -152,6 +152,30 @@ query {
 ![GraphQL Playground 창](https://i.imgur.com/hfmllVz.png)
 
 
+부가설명을 조금 해놓겠습니다. 
+```js
+query {
+  seeUser (username:"ghouse") { 
+    // seeUser는 username이란 input 값을 받아 User를 찾아오는 query입니다.
+    // 여기서는 input 인 username 값은 "ghouse"입니다. 이제 쿼리를 실행하면 "ghouse"란 사용자명을 가진 유저를 찾아옵니다.
+    // 이 아래로는 찾은 사용자의 어떤 필드를 받을지를 결정합니다.
+    // 보시면 저는 ghouse란 사용자 이름을 가진 유저의 id, fullName, bio(소개) 등을 받아옵니다.
+    id
+    fullName
+    bio
+    createdAt
+    adminof {
+      id
+      name
+    }
+    staffof {
+      name
+    }
+  }
+}
+```
+
+
 이런식으로 그래프큐엘 플레이그라운드 내에서는 저희가 만든 쿼리들, 혹은 뮤테이션들을 이용해서 어떻게 데이터를 조회하거나 변형할 수 있는지 시험해 볼 수 있습니다. 나중에 이런 쿼리들을 프론트엔드에서도 실행해서 저희가 원하는 데이터를 서버로부터 불러올텐데, 어떻게 쿼리를 짜서 데이터를 원하는 모양으로 불러올지 등을 플레이그라운드를 통해 테스트할 수 있습니다.
 
 
@@ -333,7 +357,7 @@ yarn start
 우선 병원이라는 데이터 객체를 정의해주겠습니다.
 
 
-```java
+```js
 type Hospital {
   id: ID! @id
 }
@@ -349,7 +373,7 @@ type Hospital {
 앞서 병원이라는 데이터 객체 안에 들어갈 요소들로 이름, 주소, 병원 소개, 병원 연락처 (이메일 혹은 전화번호)가 있었는데요. 해당 요소들을 추가해주겠습니다.
 
 
-```java
+```js
 type Hospital {
   id: ID! @id
   location: String
@@ -399,7 +423,7 @@ type File {
 병원 내 인테리어 사진 등을 정보 페이지에 띄워야 하니 병원 객체 안에 파일이라는 필드도 추가해줍니다. 마찬가지로 파일 객체 안에도 병원이라는 필드를 추가해줍니다. 
 
 
-```java
+```js
 type Hospital {
   id: ID! @id
   location: String
@@ -445,7 +469,7 @@ type File {
 
 마찬가지로 병원에서 올리는 포스트들도 있을테니 앞에서 파일을 추가한 것과 같은 요령으로 추가해줍니다.
 
-```java
+```js
 type Hospital {
   id: ID! @id
   location: String
@@ -480,7 +504,7 @@ type Post {
 이제 병원의 프로필 사진을 추가할 차례입니다. `avatar`라는 이름으로 병원 객체 내에 필드를 하나 추가해줍니다.
 
 
-```java
+```js
 type Hospital {
   id: ID! @id
   avatar: String 
@@ -512,11 +536,10 @@ type Hospital {
 다음 필드들을 `Hospital` 객체 안에 넣어줍니다.
 
 
-```java
+```js
   admin: User! @relation(name: "AdminOfHospital")
   staffs: [User!]! @relation(name: "StaffOfHospital")
   patients: [User!]! @relation(name: "PatientOfHospital")
-}
 ```
 
 - `admin`: 관리자입니다. 기본적으로 Hospital 객체를 만든 사용자를 해당 병원의 관리자로 설정합니다. (이 부분은 추후 `addhospital` mutation에서 설명하겠습니다.)
@@ -525,11 +548,11 @@ type Hospital {
 
 이렇게 `Hospital`과 `User`간의 관계를 세개 만들었으니, `User` 객체 역시 수정해줍니다. `User`객체의 마지막 부분에 다음과 같은 필드 3개를 추가하였습니다.
 
-> adminof: [Hospital!]! @relation(name: "AdminOfHospital")
-> staffof: [Hospital!]! @relation(name: "StaffOfHospital")
-> patientof: [Hospital!]! @relation(name: "PatientOfHospital")
-
-
+```js
+adminof: [Hospital!]! @relation(name: "AdminOfHospital")
+staffof: [Hospital!]! @relation(name: "StaffOfHospital")
+patientof: [Hospital!]! @relation(name: "PatientOfHospital")
+```
 - `adminof`: 사용자가 `admin`으로 있는 병원들의 array입니다.
 - `staffof`: 사용자가 `staff`로 있는 병원들의 array입니다.
 - `patientof`: 사용자가 `patient`로 있는 병원들의 array입니다.
@@ -542,7 +565,7 @@ type Hospital {
 (Post, File, User의 변경내용은 생략했습니다)
 
 
-```java
+```js
 type Hospital {
   id: ID! @id
   avatar: String 
@@ -562,6 +585,9 @@ type Hospital {
   patients: [User!]! @relation(name: "PatientOfHospital")
 }
 ```
+
+
+이후 `prisma deploy`를 이용해 이 데이터모델을 프리즈마에 올리고 `prisma generate`를 통해 현 데이터모델에 상응하는 prisma client를 다시 생성했습니다.
 
 
 ### 2.2.2 models.graphql
@@ -598,9 +624,11 @@ type Hospital {
 
 그런데 실제 `models.graphql` 파일을 보면 다음과 같은 필드들이 더 있을겁니다.
 
->patientsCount: Int!
->staffsCount: Int!
->isYours: Boolean!
+```
+patientsCount: Int!
+staffsCount: Int!
+isYours: Boolean!
+```
 
 이 필드들이 왜 들어가있고, 어디서 왔고, 무엇을 의미하는진 이따 computed field에 대해 설명할 때 추가로 설명하겠습니다.
 
@@ -608,18 +636,322 @@ type Hospital {
 ---
 
 
+## 2.3 Resolver 만들기
 
-To-do-list
+
+이제 데이터 모델을 완성하였으니 이 데이터들을 불러오거나 주무를 수 있는 **Resolver**들을 만들어보겠습니다. Resolver는 데이터 Query나 Mutation을 행하는 함수입니다. 아까 **GraphQL Playground**에서 다음과 같은 query를 실험해봤던 것 기억하시나요?
+
+```js
+query {
+  seeUser (username:"ghouse") {
+    id
+    fullName
+    bio
+    createdAt
+    adminof {
+      id
+      name
+    }
+    staffof {
+      name
+    }
+  }
+}
+```
+
+여기서 사용한 seeUser가 query를 해주는 resolver입니다. username이란 입력을 받아 해당 user의 데이터를 돌려주는 query를 만들 수 있도록 해주는거죠.
+
+
+Resolver에는 두 종류가 있습니다.
+
+
+1. Query: 데이터를 찾아옵니다. 위에 있는 seeUser의 경우가 대표적입니다.
+2. Mutation: 데이터를 변화시킵니다. 삭제하거나, 수정하거나, 두 데이터를 연결해서 관계를 설정해주거나 할 수 있을겁니다.
+
+
+이런 resolver들은 백엔드 폴더 내의 `./api/` 폴더 안에 다 정리되어 습니다. 저는 `./api/Hosptial` 폴더를 만들어 이 안에 병원과 관련된 모든 Resolver들을 넣어주겠습니다.
+
+
+우선 새 병원을 추가하는 `addHospital` resolver를 만들어보겠습니다. 
+
+---
+
+Resolver는 자바스크립트 코드와 GraphQL 코드 하나씩으로 이루어지는데, 저는 이 두 코드들을 포함할 `./api/Hosptial/addHospital` 폴더를 만들었습니다. (꼭 이렇게 Resolver별로 폴더를 만들 필요는 없는걸로 압니다. 하지만 이 편이 정리가 편한 것 같아요.)
+
+### 2.3.1 addHospital.graphql
+
+
+기본적으로 graphql 파일에서는 resolver의 input과 output을 정의합니다. 구조를 정의한다고 볼 수 있을 것 같습니다.
+
+
+ `./api/Hospital/addHospital/addHospital.graphql` 파일을 보시면 이렇게 되어있습니다:
+
+```js
+type Mutation {
+  addHospital(
+    name: String!
+    email: String
+    location: String
+    contact: String
+    bio: String
+  ): Hospital!
+}
+```
+
+- 새 병원을 추가하는 행위. 즉 기존 데이터베이스에 변화를 주는 행위를 하기 때문에 `type`은 `Mutation`입니다.
+
+
+- Resolver의 이름을 정의해줍니다 (addHospital)
+
+
+- Resolver의 input을 정의해줍니다. 이 경우엔 `name`, `email`, `location`, `contact`, `bio` 가 `String` 형태로 들어가네요. 여기서 `name`에는 `!` 표시가 붙어있어서 이 항목이 필수적으로 요구됨을 알 수 있습니다.
+    - 저희가 아까 데이터모델의 정의할때 `Hospital` 타입에서 `name` 필드를 필수적으로 요구했던걸 기억하시나요? 그러니 마찬가지로 여기서도 `name`을 필수적으로 요구해줍니다. 그러지 않는다면 `Hospital` 데이터를 추가하려고 할때 필수항목인 name이 부재하다고 에러가 뜰거에요.
+
+- Resolver의 output을 또 정의해줍니다. 이 경우에는 `Hospital!`입니다. 만들어진 병원 데이터를 `return`하여서 옳게 만들어졌는지 확인할 수 있도록 해보겠습니다.
+
+
+이렇게 어떤 input이 addHospital resolver안에 들어가고 어떤 output을 받는지 그 구조를 정의했습니다. 이제 이 구조대로 input을 넣고 output을 받는 자바스크립트 함수를 만들어보겠습니다.
+
+---
+
+### 2.3.2 addHospital.js
+
+`addHospital.js` 파일은 다음과 같이 되어있습니다:
+
+
+```js
+import { prisma } from "../../../../generated/prisma-client";
+
+export default {
+  Mutation: {
+    addHospital: async (_, args, { request, isAuthenticated }) => {
+      isAuthenticated(request);
+      const { name, email = "", location = "", contact = "", bio = "" } = args;
+      const { user } = request;
+      console.log(user.id)
+      return prisma.createHospital({
+        name,
+        admin: {
+          connect: {
+            id: user.id
+          }
+        },
+        email,
+        location,
+        contact,
+        bio
+      });
+    }
+  }
+};
+```
+
+하나하나 뜯어서 살펴볼게요.
+
+```js
+import { prisma } from "../../../../generated/prisma-client";
+```
+
+프리즈마 클라이언트를 불러오는 코드입니다.
+
+```js
+export default {
+  Mutation: {
+    addHospital: async (_, args, { request, isAuthenticated }) => {
+      isAuthenticated(request);
+```
+
+- `export default`는 해당 자바스크립트에서 기본적으로 `export`하는 함수 혹은 객체 등을 정의해줍니다. 이 경우에는 당연히 `addHospital`이란 `mutation`이겠죠? 따라서 이런 식으로 정의해줍니다.
+
+
+- `async`: `addHospital`은 asynchronous한 함수입니다. 자바스크립트에서 **비동기 처리** 란 특정 코드의 연산이 끝날 때까지 코드의 실행을 멈추지 않고 다음 코드를 먼저 실행하는 자바스크립트의 특성을 의미합니다.
+  - 페이스북 페이지 등을 로드할 때 먼저 로드되는 애들이 있고 아닌 애들이 있습니다. 어떤 부분들이 로드되지 않았다 해서 로드된 부분의 기능에는 영향을 주지 않습니다. 이는 **비동기 처리**로 데이터를 불러 처리하기 때문에 가능한 일입니다.
+
+
+- `async()` 안의 세 요소는 각각 ( `parent`, `args`, `context` ) 입니다.
+  1. `parent`는 아래에서 computed field에 대해 이야기할 때 추가로 설명하겠습니다. 이 함수가 속한 객체의 상위 객체를 가져오는데, 이 경우엔 그런 상위객체가 존재하지 않습니다. 따라서 변수 이름도 딱히 없고 `_`로 되어있죠.
+  2. `args`: 저희가 받아오는 input들이 모아져있는 객체입니다.
+  3. `context`: `GraphQL Context`는 현 execution에서의 모든 resolver들에서 공유되는 객체들입니다. 주로 authentication이나 사용자 정보 같은 정보들을 주로 여기 담아 공유합니다. 저희 경우엔 `isAuthenticated`라는 함수와 `request`가 context로 전해졌습니다. 보다 자세한 내용이 궁금하시면 [GraphQL Context](https://graphql-modules.com/docs/introduction/context) 문서를 참고해주세요.
+
+
+- `isAuthenticated`: 간단히 설명하자면 사용자에게서 온 요청을 받아서 이것이 로그인된 사용자에 의한 요청인지 아닌지를 판별해주는 함수입니다. 로그인을 요하는 기능들에 전부 붙어있습니다. (예를 들어 코멘트를 로그인 없이 남기면 안되니 해당 기능을 수행하는 resolver에도 이게 붙어있습니다.)
+
+
+- `request`: 사용자에게서 온 요청입니다. 사용자가 누구인지 판별할 수 있는 JWT Token이 요청의 'header'에 담겨 오게 되는데요. header에 담긴 토큰을 해독해서 사용자가 로그인된 사용자인지 아닌지를 판별합니다. 자세한 내용은 [백엔드 리포지토리](https://github.com/slee333/prismagram)에서 **2.3.4** 를 참고해주세요.
+
+
+이제 사용자가 로그인된 사용자인지 아닌지를 판별했습니다. 코드의 다음 부분으로 넘어가겠습니다.
+
+
+```js
+const { name, email = "", location = "", contact = "", bio = "" } = args;
+const { user } = request;
+console.log(user.id)
+```
+
+- `args`에서 input 값들을 다 가져옵니다. args 객체는 대충 `{ name="~~", email ="~~~" }` 이런 구조일텐데요. 자바스크립트 문법상 이런 경우 
+
+```js
+const { name, email = "", location = "", contact = "", bio = "" } = args;
+```
+
+이런 방법으로 객체 안에 있는 필드들을 변수로 간편하게 빼와줄 수 있습니다.
+
+햇갈리실거 같아 크롬 Developer Tool (구글 크롬 - F12)에서 간단한 예제를 만들어보았습니다.
+
+![Imgur](https://i.imgur.com/clJ91vo.png)
+
+
+여기서 a,b는 test라는 객체 안의 field입니다. 당연히 외부에는 a, b라는 변수가 존재하지 않죠. 하지만 test 내의 필드 a와 우리가 정의하고자 하는 변수 a의 이름이 일치하기 때문에, `const {a,b} = test` 라는 코드로 변수 a,b를 간편히 정의해줄 수 있습니다.
+
+
+- 마찬가지로 `request`라는 객체 안에서 `user` 필드를 가져옵니다.
+
+- console.log 부분은 제가 코드 잘 돌아가는지 보려고 넣은거니 무시해주세요. 나머지를 보겠습니다.
+
+
+```js
+return prisma.createHospital({
+        name,
+        admin: {
+          connect: {
+            id: user.id
+          }
+        },
+        email,
+        location,
+        contact,
+        bio
+      });
+```
+
+- Prisma client는 데이터모델이 만들어지면 기본적으로 각 데이터 타입을 (우리 경우엔 User, Hospital 등을) 만들거나, 업데이트하거나, 없애거나 하는 함수들을 만들어놓습니다. 
+
+- Prisma endpoint 링크로 들어가시면 어떤 기능들이 만들어져있는지 확인하실 수 있습니다.
+
+![Imgur](https://i.imgur.com/LcCE9HS.png)
+
+
+- Prisma endpoint 링크로 들어갔을 때 보이는 화면인데요. 오른쪽의 DOCS 버튼을 누르면 **Prisma client**에서 어떤 기본적인 함수들을 제공하는지 보실 수 있습니다.
+
+- 여기서 `createHospital(...)`을 눌러보았습니다. 그러면 오른쪽 상단에서 `createHospital`이란 함수는 `HospitalCreateInput`, 즉 `Hospital` 객체를 구성하는 요소들을 `input`으로 받고, `Hospital` 객체를 return함을 알 수 있습니다.
+
+
+- `prisma.createHospital()` 기능을 통해 `Hospital` 객체를 만들어주겠습니다. 안에 들어가는 데이터는 우리가 input으로 받은 내용들을 넣고요. 이 `addHospital`이란 `mutation`을 실행한 유저를 또 `admin`으로 포함시킵니다.
+
+
+```js
+  admin: {
+    connect: {  
+      id: user.id     
+    }
+  },
+```
+
+
+이 코드를 보시면 `connect`라는걸 볼 수 있는데요. `admin` 필드에는 `User`가 들어가지요? 간단히 생각하면 `user.id`를 가진 사용자를 admin 필드에 들어가는 사용자로 넣어주는 작업입니다. 단순한 definition이 아니라 connect인 이유는 relation 때문인데요.
+
+
+`Hospital`의 `admin` 필드와 `User`의 `adminof` 필드는 연결되어 있습니다. 따라서 유저를 병원의 `admin`에 **`connect`** 시키면, 해당 `User`의 `adminof`에는 이 `Hospital`이 자동으로 들어가게 됩니다.
+
+
+- createHospital() 함수는 Hospital 객체를 return해줍니다. 따라서 
+
+
+```js
+return prisma.createHospital({ .... }) 
+```
+
+
+이런식으로 써주게 되면 prisma.createHospital로 만들어진 `Hospital` 객체가 자동으로 `return` 되게 됩니다.
+
+
+정리하자면, `addHospital.js`는 우리가 graphql 파일에서 정의한 input들을 받고 프로세싱해서 output을 만들어주는 함수입니다. 이로서 Resolver 구성이 끝났습니다.
+
+
+### 2.3.3 addHospital.js 시험해보기 (GraphQL playground)
+
+
+이제 Resolver를 만들었으니 GraphQL playground에서 이 resolver가 잘 돌아가는지 시험해보겠습니다. localhost:4000을 통해 GraphQL playground에 접속합니다.
+
+
+그리고 addHosptial resolver를 시험해봅니다. 예를 들어,
+
+
+```js
+mutation {
+  addHospital(name: "Testopital", bio: "This is test") {
+    id
+    name
+  }
+}
+```
+
+이런 식의 mutaiton을 playground 내에 넣고 실행시켜볼 수 있겠죠. 한번 실행시켜 보겠습니다.
+
+![Imgur](https://i.imgur.com/jJDJLum.png)
+
+에러 메시지가 뜹니다. 잘 안보이실까봐 따로 적어보면:
+
+```js
+{
+  "data": null,
+  "errors": [
+    {
+      "message": "You need to log in to perform this action",
+      "locations": [
+        {
+          "line": 2,
+          "column": 3
+        }
+      ],
+      "path": [
+        "addHospital"
+      ]
+    }
+  ]
+}
+```
+
+로그인을 해야 한다 합니다. 저희가 보낸 request의 header에 유저를 의미하는 Token이 없기 때문입니다.
+
+
+하지만 GraphQL playground에는 이런 header를 만들수 있는 기능이 내장되어 있습니다. 방법은 다음과 같습니다.
+
+
+![Imgur](https://i.imgur.com/zUPuIIR.png)
+
+
+저희가 GraphQL mutatino이나 query를 입력하는 칸 아래에 http headers라 써진 부분이 보이시나요? 여기다
+
+
+```
+{
+  "Authorization": "Bearer <JWT>"
+}
+```
+
+여기서 `<JWT>` 자리에 Token을 집어넣어줍니다. Token은 어디서 받느냐면
+
+
+#### **To-do-list**
 
 1. 설치 ~ 실행 후 로그인. 이하 기능들.
   - [X] 백엔드 실행법
   - [X] 프론트엔드 실행법
+
+
 2. hospital profile 만든 과정
+
+
+  - 백엔드
   - [X] 레이아웃 설명
   - [X] datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
   - [ ] Resolver 만들기
   - [ ] Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
-  - [ ] 이후 Front end로 넘어옴
+
+
+  - 프론트앤드
   - [ ] Routes에서 hosptial profile로 넘어가는 route 만들기
   - [ ] Header에서 해당 route로 연결해주는 링크 만들기?
   - [ ] ProfilePresenter, Container 역할 + 디자인
