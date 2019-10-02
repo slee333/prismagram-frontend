@@ -299,7 +299,7 @@ yarn start
 
 ---
 
-# 2.  병원 프로필 만들기
+# 2.  병원 프로필 만들기 (백엔드)
 
 
 일단 제가 만들어놓은 병원 프로필 페이지 레이아웃은 (프런트엔드와 백엔드를 둘 다 구동중이시라면) http://localhost:3000/#/hospital/삼성서울병원 에서 확인하실 수 있습니다. 또는 제가 프론트엔드를 배포중인 링크인 https://hgroundtest.netlify.com/#/hospital/삼성서울병원 에서도 확인하실 수 있고요.
@@ -1134,6 +1134,9 @@ export default {
 ### 2.4.3 Hospital.js Computed field 만들기
 
 
+하나하나 살펴볼게요.
+
+
 우선 prisma client를 불러와줍니다.
 ```js
 import { prisma } from "../../../generated/prisma-client";
@@ -1142,10 +1145,7 @@ import { prisma } from "../../../generated/prisma-client";
 
 그리고 Hospital의 Computed field 작성을 위한 레이아웃을 잡아주고요.
 
-
 ```js
-import { prisma } from "../../../generated/prisma-client";
-
 export default {
   Hospital: {
     
@@ -1184,16 +1184,66 @@ export default {
         .count(),
 ```
 
-Prisma client에서 제공하는 함수 usersConnection은 User
 
-For to-many relations, three additional arguments are available: every, some and none, to define that a condition should match every, some or none related nodes.
+이건 Prisma documentation에서 제공하는 count 기능의 응용판인데요. Prisma client에서 제공하는 함수 `usersConnection`은 특정 조건을 만족하는 `User`들을 `return`합니다.
+
+
+가령, 여기에서 나온 조건 `usersConnection({ where: { patientof_some: {id } } })`은 `patientof` 필드에 병원 `id`를 갖는, 즉 해당 병원의 환자로 등록되어 있는 `User`들을 보여줄겁니다.
+
+
+- patientof_some과 같은 조건들은 prisma client에서 자동생성됩니다. _some, _every, _none 과 같은 argument들이 1 to N, 혹은 N to M 형태의 관계에선 자동으로 만들어지는데요. every, some, none은 각각 주어지는 조건이 related node의 전부, 일부, 혹은 none과 맞아떨어지는 경우를 의미한다고 [prisma documentation](https://www.prisma.io/docs/reference/prisma-api/queries-ahwee4zaey)엔 적혀있는데 깊이 이해는 못했습니다. count 할 때 _some을 써서 할 수 있다 정도만 알고 넘어가면 될 거 같아요 일단은.
+
+
+- 이렇게 해서 주어지는 결과를 `.aggregate()` 후 `.count()` 하면 저희가 의도한 해당 `Hospital`에 소속된 `patient` 숫자를 알 수 있습니다.
+
+
+staffsCount 역시 동일한 방식으로 만들어집니다.
+
+
 ```js
+
+    staffsCount: ({ id }) =>
+      prisma
+      .usersConnection({ where: { staffof_some: { id } } })
+        .aggregate()
+        .count(),
 ```
 
-```js
-```
+
+이제 isYours를 추가해볼게요. 병원의 admin이 나인지 아닌지 알아보기 위한 코드입니다.
+
 
 ```js
+    isYours: async (parent, _, { request }) => {
+      const { user } = request;
+      const { id: parentId } = parent;
+      const ADMIN = await prisma.hospital({ id: parentId }).admin();
+      return user.id === ADMIN.id;
+    }
+```
+
+
+우선 `user`를 `request`로부터 받아오고, `parent`의 `id`, 즉 병원의 `id`를 `parentId`란 변수로 받아옵니다.
+
+
+이후 `prisma.hospital({ id: parentId }).admin();`을 이용해 병원의 admin인 User 정보를 찾아옵니다. 사실 이거보다 더 간단하게 할 수 있는 방법이 있을텐데 일단은 이렇게 쓰고있어요.
+
+
+여기서 `prisma`를 통해 `User`를 찾아오는 과정이 즉시 완료되지 않으므로, `isYours`를 비동기 함수로 정의내려주고 (`async`) `ADMIN` 변수로 유저를 찾아 받아오는 동안 기다려줍니다. (`await`)
+
+
+이후 ADMIN이 return 되면 request를 보낸 user의 Id와 ADMIN의 id를 비교하여 이를 Boolean으로 return합니다.
+
+
+---
+
+이렇게 해서 Hospital의 computed field 정의를 완료했습니다. 앞으로 필요에 따라 여기에 더 추가할수도, 뺄수도 있겠죠.
+
+
+완성된 `Hospital.js`:
+
+```js
+import { prisma } from "../../../generated/prisma-client";
 
 export default {
   Hospital: {
@@ -1221,8 +1271,119 @@ export default {
     }
   }
 };
-
 ```
+
+
+### 2.4.4 models.graphql 수정하기
+
+
+아까 models.graphql 내에 computed field들을 넣어주어야 한다 말씀드렸습니다.
+
+
+저희가 원래 있는 필드들 (rooms, admin, files, 등등)을 제외하면 총 3개의 필드를 추가했습니다. `patientsCount`, `staffsCount`, `isYours입니다`. 이제 이 세 필드를 `Hospital`의 필드로 `models.graphql`에서 추가해야합니다.
+
+
+원래 `models.graphql` 내에 `Hospital`은 다음과 같이 정의되어 있었습니다:
+
+```js
+type Hospital {
+  id: ID!
+  avatar: String
+  location: String
+  bio: String
+  files: [File!]!
+  posts: [Post!]!
+  rooms: [Room!]!
+  name: String!
+  email: String
+  contact: String
+  admin: User
+  staffs: [User!]!
+  patients: [User!]!
+}
+```
+
+
+여기다 computed field에서 정의한 새 필드 3개를 추가합니다.
+- `patientsCount`, `staffsCount`는 `Int`, 
+- `isYours`는 `Boolean`일 것입니다.
+
+
+그러면 이렇게 되겠죠.
+
+
+```js
+type Hospital {
+  id: ID!
+  avatar: String
+  location: String
+  bio: String
+  files: [File!]!
+  posts: [Post!]!
+  rooms: [Room!]!
+  name: String!
+  email: String
+  contact: String
+  admin: User
+  staffs: [User!]!
+  patients: [User!]!
+  patientsCount: Int!
+  staffsCount: Int!
+  isYours: Boolean!
+}
+```
+
+Required 표시 (`!`)를 붙여놓은 이유는 이 필드들은 별다른 input 데이터가 필요없이 계산을 통해 항상 값을 도출할 수 있는 필드들이기 때문입니다. 아마 Required 표시를 하지 않아도 상관없지 않을까 생각합니다.
+
+
+**정리하자면 models.graphql 내에 정의되어야 하는 필드들은 다음과 같습니다:**
+
+
+1. datamodel.prisma에서 정의한 필드
+
+
+2. Computed field로 정의한 필드
+
+
+---
+
+
+이제 병원 프로필 페이지를 만들기 위해 필요한 백엔드 요소들은 다 만들었습니다. 이제 프론트엔드로 넘어가서 페이지를 직접 만들어 볼게요.
+
+
+---
+
+
+# 3 병원 프로필 컴포넌트 만들기 (프론트엔드)
+
+
+현재 병원 프로필 컴포넌트는 프론트엔드 폴더 내의 `./src/Routes/HospitalProfile` 폴더 내에 들어있습니다.
+
+
+컴포넌트를 구성하는데 필요한 코드 양이 많아 별도의 폴더를 구성해서 분리한건데요. 이렇게 하지 않고 파일 하나에 모든 코드를 다 넣어도 전혀 상관없습니다.
+
+
+## 3.1 Hospital profile 페이지 만들기
+
+
+HospitalProfile이란 컴포넌트가 없다고 가정하고 처음부터 한번 만들어 볼게요.
+
+
+우선 Routes 폴더 안에 HosptialProfile.js를 만들어줍니다.
+
+
+
+## 3.2 Hospital profile로 넘어가는 Route 만들기 + 링크 정해주기
+
+## 3.3 컴포넌트 디자인
+
+### 3.3.1 Container 만들기
+
+### 3.3.2 Presenter 만들기
+
+
+
+
 
 
 
@@ -1240,13 +1401,15 @@ export default {
   - [X] 레이아웃 설명
   - [X] datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
   - [X] Resolver 만들기
-  - [ ] Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
+  - [X]] Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
 
 
   - 프론트앤드
   - [ ] Routes에서 hosptial profile로 넘어가는 route 만들기
   - [ ] Header에서 해당 route로 연결해주는 링크 만들기?
-  - [ ] ProfilePresenter, Container 역할 + 디자인
+  - [ ] 컴포넌트 디자인
+    - Container 만들기
+    - Presenter 만들기 
 
 ---
 # 1. 설치하기
