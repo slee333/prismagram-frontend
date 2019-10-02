@@ -13,7 +13,7 @@
 위의 세 종류 프로그램은 꼭 설치해주세요!
 
 
-프론트엔드가 실행되는 모습은 Netlify[https://hgroundtest.netlify.com]에서 확인하실 수 있습니다.
+프론트엔드가 실행되는 모습은 [Netlify](https://hgroundtest.netlify.com)에서 확인하실 수 있습니다.
 
 ---
 
@@ -23,7 +23,7 @@
 
 ### 깃허브 폴더 받아오기
 
-아직 받지 않으셨다면, 백엔드 깃허브 리포지토리[https://github.com/slee333/prismagram]에서 백엔드를 받아주세요. 방법은 다음과 같습니다.
+아직 받지 않으셨다면, 백엔드 [깃허브 리포지토리](https://github.com/slee333/prismagram)에서 백엔드를 받아주세요. 방법은 다음과 같습니다.
 
 우선 터미널 (혹 커맨드라인) 내에서 프로젝트를 집어놓고 싶은 폴더 내로 이동합니다. 
 
@@ -98,7 +98,7 @@ yarn dev
 ```
 
 
-왜 구동에 이 커맨드를 쓰는지는 백엔드 리포지토리[https://github.com/slee333/prismagram]에서 2.1.2 *package.json*에 대해 설명한 부분을 참고해주세요.
+왜 구동에 이 커맨드를 쓰는지는 [백엔드 리포지토리](https://github.com/slee333/prismagram)에서 2.1.2 *package.json*에 대해 설명한 부분을 참고해주세요.
 
 
 성공적으로 백엔드를 구동했다면, 이제 인터넷 URL에 localhost:4000를 쳐서 GraphQL Playground에 접속할 수 있습니다.
@@ -155,7 +155,7 @@ query {
 이런식으로 그래프큐엘 플레이그라운드 내에서는 저희가 만든 쿼리들, 혹은 뮤테이션들을 이용해서 어떻게 데이터를 조회하거나 변형할 수 있는지 시험해 볼 수 있습니다. 나중에 이런 쿼리들을 프론트엔드에서도 실행해서 저희가 원하는 데이터를 서버로부터 불러올텐데, 어떻게 쿼리를 짜서 데이터를 원하는 모양으로 불러올지 등을 플레이그라운드를 통해 테스트할 수 있습니다.
 
 
-GraphQL에 관해 자세한 내용은 백엔드[https://github.com/slee333/prismagram] 리포지토리의 README.MD 파일에서 2.2.1번 목차를 참고해주세요.
+GraphQL에 관해 자세한 내용은 [백엔드 리포지토리](https://github.com/slee333/prismagram)의 README.MD 파일에서 2.2.1번 목차를 참고해주세요.
 
 ---
 
@@ -165,7 +165,7 @@ GraphQL에 관해 자세한 내용은 백엔드[https://github.com/slee333/prism
 데이터를 만드는건 GraphQL Playground를 통해서도 할 수 있지만 아니라 프리즈마 사이트에서도 만들 수 있습니다.
 
 
-프리즈마 웹사이트[https://prisma.io] 접속 후 로그인 > 좌측 상단에서 드롭다운 메뉴 클릭 후 dhh10-workspace 선택 > hground-test 선택.
+[프리즈마 웹사이트](https://prisma.io) 접속 후 로그인 > 좌측 상단에서 드롭다운 메뉴 클릭 후 dhh10-workspace 선택 > hground-test 선택.
 
 
 이렇게 해서 hground-test라는 프리즈마 서비스에 들어가면 저희 데이터베이스를 한눈에 보실 수 있습니다. 이런 창이 뜰겁니다.
@@ -255,7 +255,7 @@ yarn start
 로그아웃은 상단 맨 오른쪽 프로필 페이지 > 로그아웃 버튼을 통해 하실 수 있습니다.
 
 
-또는 저희가 로그인시 받아온 JWT token을 삭제함으로서 행하실수도 있습니다. 토큰이 무엇이었는지 궁금하시면 백엔드[https://github.com/slee333/prismagram] 리포지토리에서 목차 **2.3.1**, **2.3.4**를 살펴보아주세요.
+또는 저희가 로그인시 받아온 JWT token을 삭제함으로서 행하실수도 있습니다. 토큰이 무엇이었는지 궁금하시면 [백엔드 리포지토리](https://github.com/slee333/prismagram)에서 목차 **2.3.1**, **2.3.4**를 살펴보아주세요.
 
 
 저희가 로그인시 받아온 토큰은 localStorage에 저장됩니다. 아마 웹 브라우저들은 다들 localStorage에 접근하는 방법이 있을텐데, 저는 크롬을 사용하니 일단 크롬 기준으로 설명하겠습니다.
@@ -279,6 +279,11 @@ yarn start
 
 
 일단 제가 만들어놓은 병원 프로필 페이지 레이아웃은 (프런트엔드와 백엔드를 둘 다 구동중이시라면) http://localhost:3000/#/hospital/삼성서울병원 에서 확인하실 수 있습니다. 또는 제가 프론트엔드를 배포중인 링크인 https://hgroundtest.netlify.com/#/hospital/삼성서울병원 에서도 확인하실 수 있고요.
+
+
+## 2.1 참고용 레이아웃
+
+우선 제가 
 
 
 
