@@ -145,7 +145,7 @@ query {
 
 
 창 자체는 이렇게 뜰거에요.
-[Imgur](https://i.imgur.com/hfmllVz.png)
+![GraphQL Playground 창](https://i.imgur.com/hfmllVz.png)
 
 
 이런식으로 그래프큐엘 플레이그라운드 내에서는 저희가 만든 쿼리들, 혹은 뮤테이션들을 이용해서 어떻게 데이터를 조회하거나 변형할 수 있는지 시험해 볼 수 있습니다. 나중에 이런 쿼리들을 프론트엔드에서도 실행해서 저희가 원하는 데이터를 서버로부터 불러올텐데, 어떻게 쿼리를 짜서 데이터를 원하는 모양으로 불러올지 등을 플레이그라운드를 통해 테스트할 수 있습니다.
@@ -166,17 +166,20 @@ GraphQL에 관해 자세한 내용은 백엔드[https://github.com/slee333/prism
 이렇게 해서 hground-test라는 프리즈마 서비스에 들어가면 저희 데이터베이스를 한눈에 보실 수 있습니다. 이런 창이 뜰겁니다.
 
 
-[Imgur](https://i.imgur.com/4SS6wWo.jpg)
+![Imgur](https://i.imgur.com/4SS6wWo.jpg)
 
 
 여기에서 저희 데이터를 직접 만져줄 수 있는데요. 10/02일 현재 사용자의 프로필 사진을 바꿀 수 있는 기능이 저희 프론트엔드에 아직 없습니다. 따라서 제 경우 아래와 같이 프로필 사진을 직접 바꾸어주었습니다.
 
 
-[Imgur](https://i.imgur.com/b01Jrqy.jpg)
+![Imgur](https://i.imgur.com/b01Jrqy.jpg)
 
 
 
-## 1.2 프론트엔드 설치하기 (작업중)
+## 1.2 프론트엔드 설치하기
+
+
+
 
 
 To-do-list
