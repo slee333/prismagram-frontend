@@ -303,6 +303,9 @@ yarn start
 
 ## 2.2 데이터모델 만들기
 
+**Prisma**에 들어갈 데이터모델을 만듭니다.
+
+
 우선 병원 프로필 페이지를 구성하는데 필요한 데이터를 구성해야합니다. 먼저 병원이란 객체가 어떻게 구성되어 있을지를 정의해야 하는데요.
 
 
@@ -337,7 +340,7 @@ type Hospital {
 ```
 
 
-여기서 id는 저희가 정의해주는게 아니라 병원이라는 객체가 생성될 시 자동으로 생성됩니다.
+여기서 id는 병원이라는 객체가 생성될 시 자동으로 생성되는 객체의 고유번호입니다.
 
 
 #### 이름, 소개, 병원 연락처 필드 추가
@@ -424,13 +427,18 @@ type File {
 
 - 병원이란 객체 안에 files란 필드는 파일들의 array를 가집니다. 따라서 `File`이 아닌 `[File!]!`을 사용해서 `array` 형태로 정의해줍니다.
 
-- 여기서 우리는 `Hospital`과 `File` 간의 관계를 정의한다 볼 수 있는데요. 이렇게 한 객체를 다른 객체의 field로서 정의할 경우에 **prisma**에선 이 관계를 정의해주어야 합니다. 
+- 여기서 우리는 `Hospital`과 `File` 간의 관계를 정의한다 볼 수 있는데요. 이렇게 한 객체를 다른 객체의 field로서 정의할 경우에 **prisma**에서 이 관계를 보다 명확히 정의해줄 수 있습니다.
 
-- 관계의 정의는 `@relation(name: "~~~~~")`을 통해 이루어집니다. 각 관계에는 이 경우와 같이 이름이 필요합니다. 용도를 알 수 있도록 지어줍니다. 
+- 관계의 정의는 `@relation(name: "~~~~~")`을 통해 이루어집니다. 각 관계에는 이 경우와 같이 이름이 필요합니다. 용도를 알 수 있도록 적당히 지어줍니다. 
 
-- 때문에 병원 객체 내 files와 File 객체 내 hospital에 관계를 동일한 이름으로 (`@relation(name: "FilesOfHospital")`) 추가해줍니다.
+- 이 경우 병원 객체 내 `files`와 `File` 객체 내 `hospital`에 관계를 동일한 이름으로 (`@relation(name: "FilesOfHospital")`) 추가해줍니다.
+
+- 사실 같은 종류의 관계가 여러개 있지 않는 이상 관계를 반드시 이름으로 정의해줄 필요는 없습니다. 예를 들어, 이따 소개할 두 필드 `staffs`와 `patients`는 둘 다 `User`의 `array`라서 관계 정의가 필요하지만, 병원이 참여하고 있는 채팅방들을 뜻하는 `rooms`는 `Room`이라는 객체의 `array`이지만 `Hospital`이 `Room`과 맺는 유일한 종류의 관계이기 때문에 별도의 관계 정의가 필요하지 않습니다.
+
+- 그럼 우리는 왜 `files` 필드에 굳이 관계지정을 해주었느냐. `onDelete`기능을 활용하기 위해서입니다.
 
 - `onDelete: CASCADE` 부분은 병원 데이터 객체가 삭제되었을 시 이 병원과 관계를 맺고 있던 파일들을 어떻게 처리할지를 정의합니다. 이 경우 `CASCADE`라 정의하였는데, 병원이 삭제될 시 이 병원과 관계를 맺고 있든 파일들도 함께 삭제한다는 의미입니다.
+
 
 
 #### 병원 포스트 추가
@@ -492,11 +500,47 @@ type Hospital {
 `avatar`은 `String`으로 병원 프로필 사진 url을 보관하는 필드입니다.
 
 
-여기서 `@default(value: XXX)`은 해당 필드의 기본값을 지정해주는데, 저는 병원의 벡터 이미지를 하나 골라서 넣어놓았어요.
+여기서 `@default(value: XXX)`은 해당 필드의 기본값을 지정해주는데, 저는 병원의 [벡터 이미지](https://image.flaticon.com/icons/svg/1546/1546074.svg)를 하나 골라서 넣어놓았어요.
+
 
 #### 병원 소속 관리자, 의료진, 환자 명단
 
-#### models.graphql
+
+병원 소속 관리자나 의료진 명단, 환자 명단은 사용자, 혹은 사용자의 `array`로 정의할 수 있습니다 
+
+
+다음 필드들을 `Hospital` 객체 안에 넣어줍니다.
+
+
+```java
+  admin: User! @relation(name: "AdminOfHospital")
+  staffs: [User!]! @relation(name: "StaffOfHospital")
+  patients: [User!]! @relation(name: "PatientOfHospital")
+}
+```
+
+- `admin`: 관리자입니다. 기본적으로 Hospital 객체를 만든 사용자를 해당 병원의 관리자로 설정합니다. (이 부분은 추후 `addhospital` mutation에서 설명하겠습니다.)
+- `staffs` / `patients`: `User`의 `array`로 설정합니다.
+
+
+이렇게 `Hospital`과 `User`간의 관계를 세개 만들었으니, `User` 객체 역시 수정해줍니다. `User`객체의 마지막 부분에 다음과 같은 필드 3개를 추가하였습니다.
+
+> adminof: [Hospital!]! @relation(name: "AdminOfHospital")
+> staffof: [Hospital!]! @relation(name: "StaffOfHospital")
+> patientof: [Hospital!]! @relation(name: "PatientOfHospital")
+
+
+- `adminof`: 사용자가 `admin`으로 있는 병원들의 array입니다.
+- `staffof`: 사용자가 `staff`로 있는 병원들의 array입니다.
+- `patientof`: 사용자가 `patient`로 있는 병원들의 array입니다.
+
+---
+
+#### 병원 데이터모델 (완성)
+
+완성된 병원 데이터모델입니다.
+(Post, File, User의 변경내용은 생략했습니다)
+
 
 ```java
 type Hospital {
@@ -520,6 +564,51 @@ type Hospital {
 ```
 
 
+### 2.2.2 models.graphql
+
+
+이제 프리즈마에서 인지하는 데이터모델을 만들었으면, 이 데이터모델에서 정의한 데이터 type들을 똑같이 GraphQL에서도 정의해주어야 합니다.
+
+`./api/models.graphql`:
+ 
+ 이 파일에서는 우리가 GraphQL에서 사용하는 type들(User, Post, Like, 등등)을 정의합니다. 이때까지 만든 datamodel.prisma 파일과 거의 같습니다. 다만 `@relation`, `@unique` 와 같은 것들은 **GraphQL**이 아니라 **Prisma**의 문법이기 때문에 빼주어야합니다. 
+
+따라서 `./api/models.graphql`에 다음과 같은 type을 추가해줍니다.
+
+```js
+type Hospital {
+  id: ID!
+  avatar: String
+  location: String
+  bio: String
+  files: [File!]!
+  posts: [Post!]!
+  rooms: [Room!]!
+  name: String!
+  email: String
+  contact: String
+  admin: User
+  staffs: [User!]!
+  patients: [User!]!
+}
+```
+
+사실상 데이터모델에서 정의한 내용에서 프리즈마 문법만 뺀 내용입니다. `Hospital` 타입 말고도 변경된 다른 `type`들 (`User`, `Post`, `File`)에도 변화된 데이터모델을 반영하여 `models.graphql`을 수정해줍니다
+
+
+그런데 실제 `models.graphql` 파일을 보면 다음과 같은 필드들이 더 있을겁니다.
+
+>patientsCount: Int!
+>staffsCount: Int!
+>isYours: Boolean!
+
+이 필드들이 왜 들어가있고, 어디서 왔고, 무엇을 의미하는진 이따 computed field에 대해 설명할 때 추가로 설명하겠습니다.
+
+
+---
+
+
+
 To-do-list
 
 1. 설치 ~ 실행 후 로그인. 이하 기능들.
@@ -527,7 +616,7 @@ To-do-list
   - [X] 프론트엔드 실행법
 2. hospital profile 만든 과정
   - [X] 레이아웃 설명
-  - [ ] datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
+  - [X] datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
   - [ ] Resolver 만들기
   - [ ] Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
   - [ ] 이후 Front end로 넘어옴
