@@ -827,7 +827,14 @@ return prisma.createHospital({
 
 - Prisma client는 데이터모델이 만들어지면 기본적으로 각 데이터 타입을 (우리 경우엔 User, Hospital 등을) 만들거나, 업데이트하거나, 없애거나 하는 함수들을 만들어놓습니다. 
 
-- Prisma endpoint 링크로 들어가시면 어떤 기능들이 만들어져있는지 확인하실 수 있습니다.
+- Prisma endpoint 링크로 들어가시면 어떤 기능들이 만들어져있는지 확인하실 수 있습니다. Prisma endpoint 링크는 Prisma admin으로 저희가 사용하는 서비스 안에 접속했을 시 왼쪽 하단에서 확인하실 수 있는데요.
+
+
+![Imgur](https://i.imgur.com/IVGSSo7.png)
+
+
+이 링크입니다. 이 링크를 클릭해서 복사할 수 있는데, 한번 복사해서 이 링크로 접속해볼게요.
+
 
 ![Imgur](https://i.imgur.com/LcCE9HS.png)
 
