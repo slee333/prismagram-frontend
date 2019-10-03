@@ -1760,7 +1760,7 @@ else if (!loading && data && data.seeHospital) {
 ```js
 <Helmet>
           <title>{name} | H+ground</title>
-        </Helmet>
+</Helmet>
 ```
 
 
@@ -1774,18 +1774,19 @@ else if (!loading && data && data.seeHospital) {
 
 2. hospital profile 만든 과정
 
-- 백엔드
+* 백엔드
 - [x] 레이아웃 설명
 - [x] datamodel 새로 만들기. Hosptial 데이터모델, 그에 따른 데이터모델 수정
 - [x] Resolver 만들기
 - [x] Hosptial.js computed field 만들기 + 그에 따른 models.graphql 수정
 
 * 프론트앤드
-* [x] Routes에서 hosptial profile로 넘어가는 route 만들기
-* [x] Header에서 해당 route로 연결해주는 링크 만들기?
-* [ ] 컴포넌트 디자인
-  - Container 만들기
-  - Presenter 만들기
+- [x] Routes에서 hosptial profile로 넘어가는 route 만들기
+- [x] Header에서 해당 route로 연결해주는 링크 만들기?
+- [ ] 컴포넌트 디자인
+  - [X] 개요:
+  - [X] Container 만들기
+  - [ ] Presenter 만들기
 
 ---
 
