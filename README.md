@@ -1994,7 +1994,77 @@ UsernameRow는 Username을 담고 있지요. 이걸 이용해서 병원에서 �
 그런데 그 중 하나 추가적인 설명이 필요한 부분이 `map function`인데, 아까 설명을 미루었던 `<Files>` 태그를 살펴볼게요.
 
 
+```js
+<Files>
+  {files &&
+    files.map((file, index) => (
+      <File
+        key={file.id}
+        src={file.url}
+        showing={index === currentItem}
+      />
+    ))}
+</Files>
+```
 
+
+여기서 `files`는 아까도 말씀드렸듯 `File` 개체들이 들어있는 Array입니다. Array에서 map 함수는 **Array 내 각 요소들에 대해 callback function을 수행합니다.**
+[자바스크립트 콜백함수 이해하기](https://yubylab.tistory.com/entry/%EC%9E%90%EB%B0%94%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%EC%9D%98-%EC%BD%9C%EB%B0%B1%ED%95%A8%EC%88%98-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0)
+
+
+이 경우, `files.map( (file, index) => {...} )`라는 함수는 files 내의 모든 file에 대해 {...} 안에 있는 내용을 수행하게 되죠. 내용을 한번 볼까요?
+
+
+```js
+files.map((file, index) => (
+<File
+  key={file.id}
+  src={file.url}
+  showing={index === currentItem}
+/>
+)
+```
+
+
+files 안의 모든 file에 대해 `<File>`이란 엘리먼트를 만들어줌을 알 수 있습니다. File 엘리먼트에 `file`의 `url`을 `src`라는 이름으로 넘겨주고, index가 currentItem과 match 하는지 여부를 `showing`이란 이름으로 전달하는 것 역시 알 수 있는데요. `File` 엘리먼트를 살펴보겠습니다.
+
+
+```js
+const File = styled.div`
+  max-width: 100%;
+  width: 100%;
+  height: 300px;
+  position: absolute;
+  top: 0;
+  background-image: url(${props => props.src});
+  background-size: cover;
+  background-position: center;
+  opacity: ${props => (props.showing ? 1 : 0)};
+  transition: opacity 0.5s linear;
+`;
+```
+
+
+styling 부분은 따로 특이할게 없습니다. 주목해야 할 부분은 background-image 부분과 opacity 부분인데요. 
+
+
+- background-image: 앞서 src로 넘겨주었던 이미지 url을 이용해서 File의 배경 이미지를 설정해주는 부분입니다.
+
+
+- opacity: 아까 files.map에서 index가 `currentItem` 이란 `state`과 동일한지를 Boolean으로 넘겨주었습니다. 이게 true면 opacity는 1, 아니라면 opacity가 0이 됩니다.
+    - 앞서 currentItem은 0에서 파일갯수 - 1까지 3초에 한번 1씩 올라갑니다.
+    - 즉 files.map()에 의해 `<File>`은 총 파일 갯수만큼 만들어지지만, 이 중 index가 currentItem과 일치하는 단 하나의 파일만 우리에게 보이게 됩니다. 이게 병원 프로필 상단 이미지 슬라이더가 동작하는 원리입니다.
+
+
+이정도면 HospitalProfilePresenter에 관한 내용도 대부분 다루었습니다. 내용이 많이 길어졌는데 내용은 길지만 그렇게 복잡하진 않습니다. 
+
+
+위 내용을 바탕으로 직접 엘리먼트를 만들고 받은 데이터를 엘리먼트 안에 넣어 표시시키고, 그 엘리먼트의 스타일을 크롬 개발자 툴 등을 이용해 조정해가며 원하는 스타일을 만들고 하다 보면 금방 감이 오실겁니다.
+
+
+혹시 모호한 부분 있다면 말씀주세요.
+
+---
 
 #### **To-do-list**
 
@@ -2014,26 +2084,18 @@ UsernameRow는 Username을 담고 있지요. 이걸 이용해서 병원에서 �
 * 프론트앤드
 - [x] Routes에서 hosptial profile로 넘어가는 route 만들기
 - [x] Header에서 해당 route로 연결해주는 링크 만들기?
-- [ ] 컴포넌트 디자인
+- [X] 컴포넌트 디자인
   - [X] 개요:
   - [X] Container 만들기
-  - [ ] Presenter 만들기
+  - [X] Presenter 만들기
 
 ---
 
-# 1. 설치하기
 
-백엔드를 우선 실행해주세요. (백엔드 실행 관련해서는 [백엔드 리포지토리](https://github.com/slee333/prismagram)를 참조해주세요)
-그러면 GraphQL 백엔드가 localhost:4000에서 돌아갈텐데요.
+이 아래로는 제가 예전에 써놓았던 문서입니다.
 
-그럼 프론트엔드가 설치된 폴더 내에서 다음과 같은 커맨드를 실행해줍니다.
 
-```
-yarn install
-yarn start
-```
-
-이렇게 하고 나면 프론트엔드가 localhost:3000에서 실행될겁니다.
+# 1. Apollo
 
 /.Apollo/Client.js 파일을 보시면
 
