@@ -39,24 +39,15 @@ const GET_HOSPITAL = gql`
   }
 `;
 
-export const LOG_OUT = gql`
-  mutation logUserOut {
-    logUserOut @client
-  }
-`;
-
 export default withRouter(({ match: { params: { name } } }) => {
 
   const { data, loading } = useQuery(GET_HOSPITAL, {
     variables: { name }
   });
 
-  const logOut = useMutation(LOG_OUT);
-  
   return (
     <HospitalProfilePresenter
       loading={loading}
-      logOut={logOut}
       data={data}
     />
   ); // 로딩 여부, 로그아웃 기능, 데이터를 ProfilePresenter에 Prop 으로 전달.
