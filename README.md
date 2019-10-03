@@ -1266,16 +1266,59 @@ Required 표시 (`!`)를 붙여놓은 이유는 이 필드들은 별다른 input
 
 # 3 병원 프로필 컴포넌트 만들기 (프론트엔드)
 
+
 현재 병원 프로필 컴포넌트는 프론트엔드 폴더 내의 `./src/Routes/HospitalProfile` 폴더 내에 들어있습니다.
+
 
 컴포넌트를 구성하는데 필요한 코드 양이 많아 별도의 폴더를 구성해서 분리한건데요. 이렇게 하지 않고 파일 하나에 모든 코드를 다 넣어도 전혀 상관없습니다. 실제로 `./Routes/Feed` 같은 피드 보여주는 컴포넌트의 경우 한 파일에 모든게 구성되어 있어요.
 
+
 컴포넌트 만드는 과정엔 크게 4가지가 있어요.
+
 
 1. 컴포넌트에 접속 할 수 있는 URL 만들기
 2. 컴포넌트에서 사용할 데이터를 불러오는 query 만들기
 3. 데이터를 불러오기
 4. 불러온 데이터를 이용해 실제로 페이지 구성하기
+
+---
+
+## 3.0 들어가기 전에
+
+
+Visual Studio Code를 만일 사용하신다면 유용한 팁입니다. (다른 텍스트 에디터에도 유사한 기능이 있을 수 있어요)
+
+
+프런트엔드 디자인을 할 때 저희가 필연적으로 많은 컴포넌트, 혹은 엘리먼트를 만들게 됩니다. 예를 들어 저희가 로그인을 한 후 Secret을 confirm하는 페이지를 만들 때에도:
+
+```js
+<Helmet>
+  <title>Confirm Secret | Prismagram</title>
+</Helmet>
+<form onSubmit={onSubmit}>
+<Input placeholder="Paste your secret" required {...secret} />
+  <Button text={"Confirm"} />
+</form>
+
+```
+
+이렇게 `Helmet`, `form`, `Button` 등 다양한 엘리먼트 혹 컴포넌트들이 사용되는데요. 이것들이 무엇을 하는 컴포넌트들인지, 어떤 파일에서 정의된건지 궁금하실 때 이걸 확인하는 쉬운 방법을 Visual Stuido Code는 제공합니다.
+
+
+**해당 컴포넌트 이름 위에다 커서를 올리고 F12를 누르면 해당 컴포넌트가 정의된 부분을 보여줍니다.**
+
+
+![Imgur](https://i.imgur.com/Te2yvDcm.png)
+
+
+예를 들어, AuthPresenter.js에서 Button 위에 이렇게 커서를 올리고 F12를 누르면
+
+
+![Imgur](https://i.imgur.com/PYPQKm6m.png)
+
+
+이렇게 Button 컴포넌트가 정의된 Button.js 파일을 열어줍니다. 프론트엔드 페이지들에서 쓰인 요소들을 분석할 때 유용할거에요.
+
 
 ---
 
@@ -1614,7 +1657,7 @@ import Button from "../../Components/Button";
 
     - 원래는 State을 정의할때 보다 복잡한 코드를 사용해야 했지만 최신 버젼 리액트는 **Hooks** 란걸 제공해서 보다 쉽게 이런 작업들을 행할 수 있도록 해줍니다. [State Hooks 관련 문서](https://ko.reactjs.org/docs/hooks-reference.html#usestate)
 
-    - useEffect도 useState과 같이 Hooks에 속하는데요. 병원 프로필 페이지에서는 상단에서 사진의 프로필 페이지를 슬라이드하는데 쓰입니다. 역시 [관련 문서](https://ko.reactjs.org/docs/hooks-reference.html#useeffect)입니다.
+    - `useEffect`도 `useState`과 같이 Hooks에 속하는데요. 병원 프로필 페이지에서는 상단에서 사진의 프로필 페이지를 슬라이드하는데 쓰입니다. 역시 [관련 문서](https://ko.reactjs.org/docs/hooks-reference.html#useeffect)입니다.
 
 - `styled`: 리액트를 사용한 프런트엔드를 만들 때 엘리먼트들의 스타일을 보다 쉽게 지정할 수 있도록 도와줍니다. 기존 HTML - CSS를 사용한 방식에서 한 `<div> ` 엘리먼트에 스타일을 지정하려고 하면,
 
@@ -1672,7 +1715,7 @@ const Files = styled.div`
 
 ---
 
-### 3.4.2 페이지 디자인 + 컴포넌트 살펴보기
+### 3.4.2 Loader
 
 
 이제 HospitalPriflePresenter 에서 사용하는 기본적인 라이브러리들을 살펴보았으니 실제 페이지 디자인과, 각 디자인에 관여하는 컴포넌트들을 살펴볼게요.
@@ -1698,7 +1741,7 @@ export default ({ loading, data }) => {
 ```
 
 
-아까 Container에서 Presenter로 전달한 Props에는 두가지가 있었습니다. Loading과 data. 이 두 Props는 한 객체에 담겨오게 됩니다. 이 객체에서 loading과 data를 받아오는 부분이 상단 코드의 첫줄인데요, 이는 아래 코드와 같습니다. 
+아까 Container에서 Presenter로 전달한 Props에는 두가지가 있었습니다. Loading과 data. 이 두 Props는 한 객체에 담겨오게 됩니다. 이 객체에서 loading과 data를 받아오는 부분이 상단 코드의 첫줄입니다. 좀 더 이해하기 쉽게 옮겨적으면 아래 코드와 같은 식이 되겠네요.
 
 
 ```js
@@ -1727,8 +1770,10 @@ if (loading === true) {
 
 - Wrapper: 말 그대로 우리가 페이지에서 보여주는 모든 컴포넌트들을 감싸주는 컴포넌트입니다. 상위에 위치해 있죠. 인스타그램에서 우리가 보는 모든 요소들이 가운데에 정렬되어 있는데, 이는 모든 요소들보다 상위에 위치하는 Wrapper가 요소들이 가운데에 정렬되도록 잡아두고 있기에 가능합니다.
 
-- Loader: `./src/Components/Loader.js`에 존재하는 컴포넌트입니다. 단순한 컴포넌트로, 인스타그램 마크가 일정 시간 간격을 두고 깜빡이게 됩니다.
+- Loader: `./src/Components/Loader.js`에 존재하는 컴포넌트입니다. 단순한 컴포넌트로, 인스타그램 마크가 일정 시간 간격을 두고 깜빡이게 됩니다. Loader 구조에 대해서는 여기 [링크](./Docs/Loader.md))에 자세히 적어놓았습니다.
 
+---
+###  3.4.3 데이터 불러오기
 
 이제 다음 코드를 살펴보겠습니다.
 
@@ -1752,16 +1797,202 @@ else if (!loading && data && data.seeHospital) {
 ```
 
 
-로딩이 완료되었을 경우, data란 prop에서 우리가 필요한 데이터들을 뽑아줍니다. data라는 객체 안에 (seeHospital이란 resolver를 이용해서 받아온 데이터임으로) seeHospital이란 객체가 있고 그 객체 안에 id, name 등 다양한 데이터들이 들어있는데요. 그 데이터들을 받아오는 과정입니다. 
+로딩이 완료되었을 경우, `data`란 `prop`에서 우리가 필요한 데이터들을 뽑아줍니다. `data`라는 객체 안에 (seeHospital이란 resolver를 이용해서 받아온 데이터임으로) `seeHospital`이란 객체가 있고 그 객체 안에 `id`, `name` 등 다양한 데이터들이 들어있는데요. 그 데이터들을 받아오는 과정입니다.
 
 
-- Helmet: Helmet은 우리가 새 탭을 켰을때 보이는 텍스트를 결정해줍니다. 병원 프로필 페이지의 Helmet은 다음과 같이 
+지금은 병원 객체를 받아왔으니 `admin`, `location`, `staffs` 등 병원 객체 안의 필드들을 받아왔지만 받아오는 객체에 따라 다른 필드들을 받아올수도 있습니다.
+
+---
+
+### 3.4.4 Slider (1)
+
+
+코드의 다음 부분은 병원 프로필 페이지 상단에서 돌아가는 슬라이더를 만드는 부분입니다.
+
+
+```js
+    const [currentItem, setCurrentItem] = useState(0);
+    const slide = () => {
+      const totalFiles = files.length;
+      if (currentItem === totalFiles - 1) {
+        setTimeout(() => setCurrentItem(0), 3000);
+      } else {
+        setTimeout(() => setCurrentItem(currentItem + 1), 3000);
+      }
+    };
+    useEffect(() => {
+      slide();
+    }, [currentItem]);
+```
+
+
+- useState은 `currentItem`이라는 state과, `currentItem`을 지정해줄 수 있는 함수 `setCurrentItem`을 만들어줍니다.
+    - useState으로 state을 만들어줄 때, 해당 state의 시작값을 지정해주어야 합니다 여기서는 0을 지정해주었네요.
+    - `currentItem`이란 state은 병원 상단에서 사진을 슬라이드시킬 때 어떤 사진을 보일지 지정해줍니다.
+
+
+저희가 `seeHospital`을 통해 받아오는 정보들 중 `files`가 있습니다. `File`이란 객체들이 들어있는 `array`인데요. `slide` 함수는 이 array의 길이 범위 안에서 `currentItem`을 실행 시점부터 3초 이후에 1을 올려줍니다. 만약 `currentItem`이 파일의 갯수 - 1 이라면 1을 올리는 대신 `currentItem`을 0으로 만들어주죠.
+
+
+좀 더 자세히 뜯어보면:
+
+
+```js
+    const totalFiles = files.length;
+```
+
+파일들이 전부 몇개인지 `files.length`를 통해 받아옵니다. (자바스크립트에서 Array 안에 들어있는 element들의 갯수를 받아오는 방법입니다.)
+
+
+```js
+    if (currentItem === totalFiles - 1) {
+      setTimeout(() => setCurrentItem(0), 3000);
+    } 
+```
+
+이후, `currentItem`이 `totalFiles`보다 하나가 모자라다면, 3000 ms (=3초) 이후 currentItem을 setCurrentItem을 이용해 0으로 맞춰줍니다.
+
+
+```js
+      else {
+        setTimeout(() => setCurrentItem(currentItem + 1), 3000);
+      }
+```
+
+만일 `currentItem`이 `totalFiles` - 1보다 작다면, 3초 간격으로 `setCurrentItem`을 이용해 `currentItem`을 1씩 늘려줍니다.
+
+
+여기까지 읽으셨으면 `currentItem`을 `Files`란 array 안에 존재하는 파일을 특정하는 인덱스로 활용한다는 사실을 눈치채셨을 것 같습니다. 실제로 병원 프로필 상단의 사진 슬라이드는 `currentItem`을 인덱스로 활용해서 해당 사진을 보여주는 방식으로 만들어져 있습니다. 때문에 3초 간격으로 사진들이 바뀌는 것이죠. (추후에 이 부분은 수정할지도 모릅니다. 직접 수동으로 슬라이드 가능하도록.) 
+
+
+```js
+    useEffect(() => {
+      slide();
+    }, [currentItem]);
+```
+
+여기 정의된 `useEffect`는
+1. 처음 페이지가 render되었을 때
+2. 컴포넌트가 업데이트되었을 때. 여기서는 currentItem이란 State이 업데이트 되었을 때.
+
+
+이 떄 실행되는 함수를 생성합니다. 이 경우엔 앞서 이야기한 `slide()` 함수를 실행하는데요. 따라서 1) 처음 페이지가 render 되었을 때, 2) 이후 3초마다 `currentItem`이 업데이트 될 때마다 useEffect가 slide()함수를 실행하며 `currentItem`을 0부터 totalFiles - 1까지 변화시킨다는 것을 확인하실 수 있습니다.
+
+---
+
+### 3.4.5 본격적인 페이지 디자인
+
+
+드디어 본격적인 페이지 디자인입니다.
+
+
+HospitalProfileContainer가 return하는 리액트 엘리먼트는 [다음](./Docs/HospitalProfilePresenter.md)과 같습니다. 너무 길어서 문서는 분리했습니다. 
+
+
+우선 Presenter 안의 요소들이 각각 어떤 기능을 하는지 간단히 살펴볼게요.
+
+
+- `<Wrapper>` 엘리먼트는 아까 `Loader` 설명할때도 했지만 모든 엘리먼트들을 감싸는 역할을 합니다. 모든 엘리먼트 상위에 위치하며 내용을 가운데로 정렬해줍니다.
+
+
+- `<Helmet>`: 우리가 브라우저를 켜면 상단 탭에 페이지 제목이 보입니다. 이렇듯 페이지 타이틀이나 meta 태그와 같은 요소들은 react에서 관리되는 요소들이 아니라 좀 복잡한 코드를 입력해야 하는데요. `react-helmet`이란 라이브러리에서 제공하는 `Helmet`은 그럴 필요 없이 리액트 컴포넌트 렌더링하듯이 바로 페이지 타이틀 등을 지정할 수 있도록 해줍니다. 자세한 설명은 [링크의 3-7 부분](https://velopert.com/3425)을 참고해주세요.
+
+
+실제 사용은 다음과 같이 합니다.
+
 
 ```js
 <Helmet>
-          <title>{name} | H+ground</title>
+  <title>{name} | H+ground</title>
 </Helmet>
 ```
+
+
+이렇게 해 주고 병원 프로필 페이지를 보시면 
+
+
+
+이렇게 Helmet 안에 title을 지정한데로 페이지 제목이 표시되는 것을 보실 수 있습니다.
+
+
+그 아래를 보시면 Files 부분이 있는데 이건 추후에 설명할게요. 앞서 말씀드린 slide를 시키는 부분이란것만 지금은 아시면 될거같아요.
+
+
+- `<Header>`: 프로필 페이지 상단에 나타나는 부분입니다. 병원 정보와 스태프 숫자 등이 표시되는 부분인데요.
+
+    - `HeaderColumn`: Header는 `HeaderColumn`이라는 `div`으로 구성되어 있습니다. 그리고 이 `HeaderColumn`은 총 2개가 있는데, 그 중 하나에는 사용자 이름과 병원에서 일하는 사람들 수 등이 들어가고 나머지 하나에는 버튼이 들어가있습니다.
+
+
+      - `UsernameRow` 역시 그냥 `div`입니다. 사용자 이름을 넣을 행과, 병원의 staffsCount, patientsCount 등을 넣을 행을 구분하기 위해서 만들었어요.
+
+
+      - `UsernameRow`의 스타일링을 살펴보면 ,`display: flex;` , `align-items: center;` 등의 내용이 있는데, 간단히 말해 flex를 이용해 UsernameRow의 width를 HeaderColumn의 너비와 같게 만들어 공간을 확보하고, UsernameRow 안의 모든 내용을 가운데에 정렬했다 보시면 될 거 같아요.
+
+
+      - 이런 스타일링은 일부는 처음부터 알고 하지만 일부는 일단 엘리먼트들을 넣어놓고 구글 개발자 툴을 이용해 스타일을 부여해가며 제가 원하는 스타일이 나올때까지 맞춰줍니다.
+
+
+```js
+<UsernameRow>
+  <Username>{name}</Username>{" "}
+</UsernameRow>
+```
+
+UsernameRow는 Username을 담고 있지요. 이걸 이용해서 병원에서 받아온 `name`을 표시해줍니다.
+  
+
+다른 엘리먼트들도 내용은 비슷합니다.
+
+
+- Counts: ul (unordered list)로, 밑에 하위의 `Count`라는 list item을 지니고 있습니다. 말이 어려운데, 간단히 말해 [list 엘리먼트](https://www.w3schools.com/html/html_lists.asp)를 만들었다 보시면 될 것 같아요.
+  - 이 안에 FatText라는 컴포넌트를 사용해 병원의 의료진 숫자와 환자들 숫자를 표시해줍니다.
+  - `<FatText>` 컴포넌트는 텍스트를 props으로 주면 해당 텍스트를 진한 글씨로 렌더링해주는 컴포넌트입니다. (`./src/Components/FatText.js` 참고)
+
+
+```js
+<Counts>
+  <Count>
+    <FatText text={String(staffsCount)} /> Staffs
+  </Count>
+  <Count>
+    <FatText text={String(patientsCount)} /> Pts
+  </Count>
+  <Count>
+    위치: <FatText text={String(location)} />
+  </Count>
+</Counts>
+```
+
+
+따라서 이런 식으로 `<Counts>` 라는 ul 엘리먼트 안에 3개의 리스트 엘리먼트 `<Count>`를 넣고, 그 안에 각각 데이터로부터 받아온 staffsCount, patientsCount, location 값을 넣었습니다. 자바스크립트 변수를 넣을땐 저렇게 { } 중괄호 안에 넣어주어야 합니다.
+
+
+![Imgur](https://i.imgur.com/NVLQj9o.png)
+
+
+그 결과 이런 메뉴가 완성된거죠.
+
+
+그런데 이 메뉴 디자인이 너무 심심하다 싶으면 저희가 만져줄 수 있습니다. 크롬 개발자 도구를 한번 이용해볼텐데요. 구글 크롬의 경우 이 메뉴를 `우클릭 - 검사` 를 누르면
+
+
+![Imgur](https://i.imgur.com/c4Ov6or.png)
+
+
+개발자 메뉴 내에서 해당 요소를 볼 수 있습니다. 여기서 저는 list들 중 하나를 선택해서 텍스트 색깔을 붉은색으로 바꾸어 볼게요
+
+
+![Imgur](https://i.imgur.com/gi3JRUc.png)
+
+
+우측 하단에서 제가 선택한 list에 `color:red`를 부여했더니 색깔이 바뀐 모습을 확인하실 수 있습니다. 이와 같이 개발자 메뉴를 이용해서 css 스타일링을 디버깅할 수 있어요. 보다 자세한 내용은 [이 링크](http://comajava.blogspot.com/2013/11/chrome-css.html)를 참고해주세요. 직접 해보시면 이해하기 정말 쉬울겁니다.
+
+
+나머지 내용은 크게 특별한게 없습니다. 그냥 여러 div 엘리먼트들을 생성해서 아까 받아온 데이터들을 넣어준 작업의 반복이고, 읽어보면 바로 아실거에요.
+
+
+그런데 그 중 하나 추가적인 설명이 필요한 부분이 `map function`인데, 아까 설명을 미루었던 `<Files>` 태그를 살펴볼게요.
+
 
 
 
