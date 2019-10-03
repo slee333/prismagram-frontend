@@ -1580,9 +1580,19 @@ useQuery 함수는 두가지를 return하는데요, 하나는 Query의 결과로
 그러면 이제 받아온 데이터와 로딩 여부를 바탕으로 본격적으로 페이지를 만들어줄 차례입니다. 앞서 페이지에서 보여지는 element들이 들어있는 곳은 `HospitalProfilePresenter`라고 말씀드렸죠? `HospitalProfilePresenter` 컴포넌트에 `loading`과 `data`라는 `props`를 전달하고, 본격적으로 페이지 디자인을 시작합니다.
 
 
+`props`는 부모 컴포넌트가 자식 컴포넌트에게 전달하는 값이라 생각하면 될 것 같아요. 도움 될 만한 [문서](https://velopert.com/3629) 첨부합니다.
+
+
+---
+
+
 ## 3.4 컴포넌트 디자인: Presenter
 
-Presenter
+
+`HospitalProfilePresenter` 문서를 한번 보겠습니다. 문서가 너무 길어서 전부 다 여기다 옮기지는 못하지만 일단 부분부분 살펴보도록 할게요.
+
+
+
 
 #### **To-do-list**
 
