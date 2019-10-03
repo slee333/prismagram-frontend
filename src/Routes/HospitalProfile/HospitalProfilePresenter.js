@@ -93,7 +93,7 @@ const Docs = styled.div`
   text
 `;
 
-export default ({ loading, data, logOut }) => {
+export default ({ loading, data }) => {
   if (loading === true) {
     //  로딩중이라면 로딩화면!
     return (

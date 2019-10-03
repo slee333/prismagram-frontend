@@ -1592,6 +1592,177 @@ useQuery 함수는 두가지를 return하는데요, 하나는 Query의 결과로
 `HospitalProfilePresenter` 문서를 한번 보겠습니다. 문서가 너무 길어서 전부 다 여기다 옮기지는 못하지만 일단 부분부분 살펴보도록 할게요.
 
 
+### 3.4.1 라이브러리 살펴보기
+
+
+우선 병원 프로필 페이지에서 import하는 라이브러리를 한번 살펴보겠습니다.
+
+
+```js
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { Helmet } from "rl-react-helmet";
+import Loader from "../../Components/Loader";
+import Avatar from "../../Components/Avatar";
+import FatText from "../../Components/FatText";
+import FollowButton from "../../Components/FollowButton";
+import SquarePost from "../../Components/SquarePost";
+import Button from "../../Components/Button";
+```
+
+- `useState`: `State`은 컴포넌트에서 관리하는 상태 값으로, 유동적인 데이터를 다룰 때 주로 사용합니다. useState은 state을 쉽게 관리할 수 있도록 도와줍니다.
+
+    - 원래는 State을 정의할때 보다 복잡한 코드를 사용해야 했지만 최신 버젼 리액트는 **Hooks** 란걸 제공해서 보다 쉽게 이런 작업들을 행할 수 있도록 해줍니다. [State Hooks 관련 문서](https://ko.reactjs.org/docs/hooks-reference.html#usestate)
+
+    - useEffect도 useState과 같이 Hooks에 속하는데요. 병원 프로필 페이지에서는 상단에서 사진의 프로필 페이지를 슬라이드하는데 쓰입니다. 역시 [관련 문서](https://ko.reactjs.org/docs/hooks-reference.html#useeffect)입니다.
+
+- `styled`: 리액트를 사용한 프런트엔드를 만들 때 엘리먼트들의 스타일을 보다 쉽게 지정할 수 있도록 도와줍니다. 기존 HTML - CSS를 사용한 방식에서 한 `<div> ` 엘리먼트에 스타일을 지정하려고 하면,
+
+```html
+<div id="testId" class="testClass">
+  Hello World!
+</div>
+```
+
+이렇게 HTML 파일 안의 `div` 엘리먼트 안에 class, 혹은 id를 지정하고, css 파일을 따로 만들어
+
+```css
+#testId {
+  border: 2px;
+}
+
+.test {
+  background-color: red;
+}
+```
+
+이런 식으로 id와 class를 가진 엘리먼트를 어떻게 스타일링할지 따로 지정해주어야 했습니다. 하지만 저희가 사용하는 `styled component`는 이 작업을 보다 간단하게 수행할 수 있습니다. 
+
+예를 들어 `HospitalProfilePresenter` 안에는 `Files`라 이름붙은 div이 있습니다. 이 div을 정의하고 스타일링하는 과정을 styled component는 간단히 수행할 수 있어요.
+
+
+``` js
+const Files = styled.div`
+  position: absolute;
+  left: 20%;
+  top: 0%;
+  width: 60%;
+  z-index: -100;
+`;
+```
+
+이렇게 Files를 지정한 css 스타일을 갖는 div 엘리먼트로 지정해주는거죠. 이후 이 Files란 div 엘리먼트를 실제로 페이지 안에 집어넣는 과정도 간단합니다.
+
+
+```js
+        <Files>
+          {files &&
+            files.map((file, index) => (
+              <File
+                key={file.id}
+                src={file.url}
+                showing={index === currentItem}
+              />
+            ))}
+        </Files>
+```
+
+이렇게 HTML 태그처럼 (`<Files>  ...  </Files>`) 넣어줄 수 있는거죠.
+
+
+---
+
+### 3.4.2 페이지 디자인 + 컴포넌트 살펴보기
+
+
+이제 HospitalPriflePresenter 에서 사용하는 기본적인 라이브러리들을 살펴보았으니 실제 페이지 디자인과, 각 디자인에 관여하는 컴포넌트들을 살펴볼게요.
+
+
+![Imgur](https://i.imgur.com/dGom114l.png)
+
+
+파일의 첫 부분은 styled component를 사용해서 여러 엘리먼트들을 정의내리는 부분입니다. 이 부분은 생략하도록 하겠습니다. 그 다음 실제로 컴포넌트를 `export`하는 부분을 살펴볼게요.
+
+
+```js
+export default ({ loading, data }) => {
+  if (loading === true) {
+    //  로딩중이라면 로딩화면!
+    return (
+      <Wrapper>
+        <Loader />
+      </Wrapper>
+    );
+  } else if (!loading && data && data.seeHospital) { ... }
+    
+```
+
+
+아까 Container에서 Presenter로 전달한 Props에는 두가지가 있었습니다. Loading과 data. 이 두 Props는 한 객체에 담겨오게 됩니다. 이 객체에서 loading과 data를 받아오는 부분이 상단 코드의 첫줄인데요, 이는 아래 코드와 같습니다. 
+
+
+```js
+export default ( props ) => {
+  const loading = props.loading;
+  const data = props.data;
+
+  if (loading === true) { ... }
+```
+
+
+앞서 `Loading` 이라는 변수는 data가 로드되었는지 유무를 알려주는 Boolean이라 말씀드렸습니다. 아직 데이터가 로딩중이라면 병원 프로필 페이지를 띄워도 보여줄 수 있는 내용도 없고 오류가 뜰테니, `Loading`일 `true`일 경우 `Loader`라는, 로딩화면을 띄우는 컴포넌트를 보여줍니다. 그게 아래 코드입니다:
+
+```js
+
+if (loading === true) {
+    //  로딩중이라면 로딩화면!
+    return (
+      <Wrapper>
+        <Loader />
+      </Wrapper>
+    ); 
+  }
+
+```
+
+- Wrapper: 말 그대로 우리가 페이지에서 보여주는 모든 컴포넌트들을 감싸주는 컴포넌트입니다. 상위에 위치해 있죠. 인스타그램에서 우리가 보는 모든 요소들이 가운데에 정렬되어 있는데, 이는 모든 요소들보다 상위에 위치하는 Wrapper가 요소들이 가운데에 정렬되도록 잡아두고 있기에 가능합니다.
+
+- Loader: `./src/Components/Loader.js`에 존재하는 컴포넌트입니다. 단순한 컴포넌트로, 인스타그램 마크가 일정 시간 간격을 두고 깜빡이게 됩니다.
+
+
+이제 다음 코드를 살펴보겠습니다.
+
+```js
+else if (!loading && data && data.seeHospital) {
+    //  로딩도 완료되고, 데이터도 넘어왔고 한다면 사용자의 프로필을 만들어줍니다.
+    const {
+      seeHospital: {
+        id,
+        name,
+        bio,
+        files,
+        location,
+        staffs,
+        admin,
+        isYours,
+        staffsCount,
+        patientsCount
+      }
+    } = data;
+```
+
+
+로딩이 완료되었을 경우, data란 prop에서 우리가 필요한 데이터들을 뽑아줍니다. data라는 객체 안에 (seeHospital이란 resolver를 이용해서 받아온 데이터임으로) seeHospital이란 객체가 있고 그 객체 안에 id, name 등 다양한 데이터들이 들어있는데요. 그 데이터들을 받아오는 과정입니다. 
+
+
+- Helmet: Helmet은 우리가 새 탭을 켰을때 보이는 텍스트를 결정해줍니다. 병원 프로필 페이지의 Helmet은 다음과 같이 
+
+```js
+<Helmet>
+          <title>{name} | H+ground</title>
+        </Helmet>
+```
+
 
 
 #### **To-do-list**
