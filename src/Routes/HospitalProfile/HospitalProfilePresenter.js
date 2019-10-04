@@ -5,8 +5,12 @@ import Loader from "../../Components/Loader";
 import Avatar from "../../Components/Avatar";
 import FatText from "../../Components/FatText";
 import FollowButton from "../../Components/FollowButton";
-import SquarePost from "../../Components/SquarePost";
+import Post from "../../Components/Post";
 import Button from "../../Components/Button";
+
+// Tab을 import
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+// import "react-tabs/style/react-tabs.css";
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -22,7 +26,9 @@ const Header = styled.header`
   margin-top: 180px;
 `;
 
-const HeaderColumn = styled.div``;
+const HeaderColumn = styled.div`
+  flex-basis: ${props => props.length};
+`;
 
 const UsernameRow = styled.div`
   display: flex;
@@ -44,10 +50,6 @@ const Count = styled.li`
   &:not(:last-child) {
     margin-right: 10px;
   }
-`;
-
-const FullName = styled(FatText)`
-  font-size: 16px;
 `;
 
 const Bio = styled.p`
@@ -82,31 +84,85 @@ const File = styled.div`
   transition: opacity 0.5s linear;
 `;
 
+const Content = styled.div``;
+
 const ContentRow = styled.div`
   width: 100%;
   margin-top: 60px;
   margin-bottom: 10px;
 `;
 
+const CRowTitle = styled(FatText)`
+  font-size: 16px;
+`;
+
+const CRowText = styled.p`
+  padding-top: 22px;
+  font-weight: 200;
+  font-size: 13px;
+  line-height: 24px;
+  color: #666;
+`;
+
 const Docs = styled.div`
   min-height: 30px;
-  text
+`;
+
+const STabs = styled(Tabs)``;
+STabs.tabsRole = "Tabs";
+
+const STabList = styled(TabList)`
+  height: 58px;
+  border-top: 2px solid #efefef;
+  display: flex;
+`;
+STabList.tabsRole = "TabList";
+
+const STab = styled(Tab)`
+  width: 100%;
+  background-color: ${props => (props.selected ? "#E5E5E5" : "#FAFAFA")};
+  cursor: pointer;
+  transition: background-color 0.2s linear;
+`;
+STab.tabsRole = "Tab";
+
+const STabPanel = styled(TabPanel)``;
+STabPanel.tabsRole = "TabPanel";
+
+const TabMenu = styled.div`
+  position: relative;
+  margin: 0 auto;
+`;
+
+const TabText = styled.a`
+  display: block;
+  width: 100%;
+  height: 24px;
+  margin-top: -1px;
+  padding: 16px 0 17px;
+  border-top: 1px solid transparent;
+  font-size: 16px;
+  color: ${props => (props.selected ? "#333" : "#959595")};
+  border-color: ${props => (props.selected ? "#333" : "#959595")};
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s linear;
 `;
 
 export default ({ loading, data }) => {
   if (loading === true) {
-    //  로딩중이라면 로딩화면!
     return (
       <Wrapper>
         <Loader />
       </Wrapper>
     );
   } else if (!loading && data && data.seeHospital) {
-    //  로딩도 완료되고, 데이터도 넘어왔고 한다면 사용자의 프로필을 만들어줍니다.
     const {
       seeHospital: {
         id,
         name,
+        avatar,
+        posts,
         bio,
         files,
         location,
@@ -117,8 +173,11 @@ export default ({ loading, data }) => {
         patientsCount
       }
     } = data;
+
     console.log(data);
+
     const [currentItem, setCurrentItem] = useState(0);
+    const [currentTab, setCurrentTab] = useState(0);
     const slide = () => {
       const totalFiles = files.length;
       if (currentItem === totalFiles - 1) {
@@ -133,9 +192,11 @@ export default ({ loading, data }) => {
 
     return (
       <Wrapper>
+        {/* 병원 이름 및 타이틀 */}
         <Helmet>
-          <title>{name} | H+ground</title>
+          <title> {name} | H+ground</title>
         </Helmet>
+        {/* 병원 사진 슬라이드 */}
         <Files>
           {files &&
             files.map((file, index) => (
@@ -146,11 +207,12 @@ export default ({ loading, data }) => {
               />
             ))}
         </Files>
+        {/* 병원 프로필 사진, 이름, 및 버튼 (팔로우용? 수정용?) */}
         <Header>
-          {/* <HeaderColumn>
-             <Avatar size="lg" url={files[0].url} />
-           </HeaderColumn> */}
-          <HeaderColumn>
+          <HeaderColumn length="25%">
+            <Avatar size="lg" url={avatar} background="white" topMargin={-80} />
+          </HeaderColumn>
+          <HeaderColumn length="60%">
             <UsernameRow>
               <Username>{name}</Username>{" "}
             </UsernameRow>
@@ -167,68 +229,105 @@ export default ({ loading, data }) => {
             </Counts>
             <Username text={location} />
           </HeaderColumn>
-          <HeaderColumn>
+          <HeaderColumn length="15%">
             {isYours ? (
-              <Button onClick={console.log("I'm Youurs")} text="Your HP" />
+              <Button
+                onClick={() => {
+                  console.log("I'm Youurs");
+                }}
+                text="Your HP"
+              />
             ) : (
               //  <FollowButton isFollowing={isFollowing} id={id} />
               <Button
-                onClick={console.log("Not your hospital")}
+                onClick={() => {
+                  console.log("Not your hospital");
+                }}
                 text="Not your HP"
               />
             )}
           </HeaderColumn>
         </Header>
-        <div id="Content">
-          <ContentRow>
-            <FatText text={"병원 소개"} />
-          </ContentRow>
-          <div>{bio}</div>
 
-          <ContentRow>
-            <FatText text={"선생님 프로파일"} />
-            <Docs>
-              <Avatar size="lg" url={admin.avatar} />
-              {"원장: " + admin.fullName}
-              {"\n 이력: " + admin.bio}}
-              {/* {admin &&
+        <STabs defaultIndex={0} onSelect={index => setCurrentTab(index)}>
+          <TabMenu>
+            <STabList>
+              <STab selected={currentTab === 0}>
+                <TabText selected={currentTab === 0}>병원 소개</TabText>
+              </STab>
+              <STab selected={currentTab === 1}>
+                <TabText selected={currentTab === 1}>포스트</TabText>
+              </STab>
+              <STab selected={currentTab === 2}>
+                <TabText selected={currentTab === 2}>커뮤니티</TabText>
+              </STab>
+            </STabList>
+          </TabMenu>
+
+          <Content>
+            <STabPanel>
+              <ContentRow key="intro">
+                <CRowTitle text={"병원 소개"} />
+                <CRowText>{bio}</CRowText>
+              </ContentRow>
+              <ContentRow key="staffProfile">
+                <CRowTitle text={"선생님 프로파일"} />
+                <Docs>
+                  <Avatar size="lg" url={admin.avatar} />
+                  {"원장: " + admin.fullName}
+                  {"\n 이력: " + admin.bio}}
+                  {/* {admin &&
                 admin.map(adm => (<span>{adm.fullName + ":" + adm.bio}</span>))} */}
-            </Docs>
-            {
-              <Docs>
-                {staffs &&
-                  staffs.map(staff => (
-                    <span>
-                      {"스탭:" + staff.fullName + "\n 이력: " + staff.bio}
-                    </span>
+                </Docs>
+                {
+                  <Docs>
+                    {staffs &&
+                      staffs.map(staff => (
+                        <span>
+                          {"스탭:" + staff.fullName + "\n 이력: " + staff.bio}
+                        </span>
+                      ))}
+                  </Docs>
+                }
+              </ContentRow>
+              <ContentRow key="location">
+                <CRowTitle text={"위치"} />
+                <Bio>{"병원 위치:   " + location}</Bio>
+              </ContentRow>
+              <ContentRow key="staffNumber">
+                <CRowTitle text={"스탭 인원"} />
+                <Bio>{"Medical Staffs:" + String(staffsCount + 1)}</Bio>
+              </ContentRow>
+              <ContentRow key="patientNumber">
+                <CRowTitle text={"환자 인원수"} />
+
+                <Bio>{"Number of patients:" + String(patientsCount)}</Bio>
+              </ContentRow>
+            </STabPanel>
+            <STabPanel>
+              <Posts>
+                {posts &&
+                  posts.map(post => (
+                    <Post
+                      key={post.id}
+                      id={post.id}
+                      location={post.location}
+                      caption={post.caption}
+                      user={{ id, avatar, username: name }}
+                      files={post.files}
+                      likeCount={post.likeCount}
+                      isLiked={post.isLiked}
+                      comments={post.comments}
+                      createdAt={post.createdAt}
+                    />
                   ))}
-              </Docs>
-            }
-          </ContentRow>
-          <ContentRow>
-            <FatText text={"위치"} />
-          </ContentRow>
-          <bio>{"병원 위치:   " + location}</bio>
-          <ContentRow>
-            <FatText text={"스탭 인원"} />
-          </ContentRow>
-          <bio>{"Medical Staffs:" + String(staffsCount + 1)}</bio>
-          <ContentRow>
-            <FatText text={"환자 인원수"} />
-          </ContentRow>
-          <bio>{"Number of patients:" + String(patientsCount)}</bio>
-        </div>
-        {/* <Posts>
-           {posts &&
-             posts.map(post => (
-               <SquarePost
-                 key={post.id}
-                 likeCount={post.likeCount}
-                 commentCount={post.commentCount}
-                 file={post.files[0]}
-               />
-             ))}
-         </Posts> */}
+              </Posts>
+            </STabPanel>
+            <STabPanel>
+              <h2>Any content 3</h2>
+            </STabPanel>
+          </Content>
+        </STabs>
       </Wrapper>
     );
   }

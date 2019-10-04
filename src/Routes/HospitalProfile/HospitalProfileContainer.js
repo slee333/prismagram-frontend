@@ -35,20 +35,35 @@ const GET_HOSPITAL = gql`
       isYours
       staffsCount
       patientsCount
+      avatar
+      posts {
+        id
+        location
+        caption
+        files {
+          id
+          url
+        }
+        likeCount
+        isLiked
+        comments {
+          id
+          text
+          user {
+            id
+            username
+          }
+        }
+        createdAt
+      }
     }
   }
 `;
 
 export default withRouter(({ match: { params: { name } } }) => {
-
   const { data, loading } = useQuery(GET_HOSPITAL, {
     variables: { name }
   });
 
-  return (
-    <HospitalProfilePresenter
-      loading={loading}
-      data={data}
-    />
-  ); // 로딩 여부, 로그아웃 기능, 데이터를 ProfilePresenter에 Prop 으로 전달.
+  return <HospitalProfilePresenter loading={loading} data={data} />; // 로딩 여부, 로그아웃 기능, 데이터를 ProfilePresenter에 Prop 으로 전달.
 });

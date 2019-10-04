@@ -24,13 +24,31 @@ const Container = styled.div`
   border-radius:50%;
 `;
 
-const Avatar = ({ size = "sm", url, className }) => (
-  <Container className={className} size={size} url={url} />
+const Background = styled.div`
+  ${props => getSize(props.size)}
+  background-size:cover;
+  background-color: ${props => props.background}
+  border-radius:50%;
+  margin-top: ${props => String(props.topMargin) + "px"}
+`;
+
+const Avatar = ({
+  size = "sm",
+  url,
+  className,
+  background = "transparent",
+  topMargin = 0
+}) => (
+  <Background className={className} size={size} background={background} topMargin={topMargin}>
+    <Container className={className} size={size} url={url} />
+  </Background>
 );
 
 Avatar.propTypes = {
   size: PropTypes.oneOf(["sm", "md", "lg"]),
-  url: PropTypes.string.isRequired
+  url: PropTypes.string.isRequired,
+  background: PropTypes.string,
+  topMargin: PropTypes.number
 };
 
 export default Avatar;
