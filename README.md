@@ -1626,6 +1626,62 @@ useQuery 함수는 두가지를 return하는데요, 하나는 Query의 결과로
 `props`는 부모 컴포넌트가 자식 컴포넌트에게 전달하는 값이라 생각하면 될 것 같아요. 도움 될 만한 [문서](https://velopert.com/3629) 첨부합니다.
 
 
+
+### 3.3.3 propTypes
+
+
+HosptialPresenter의 경우 PropTypes를 필요로 하지 않지만, 어떤 컴포넌트의 경우 PropType을 정의해줘야 하는 경우가 있습니다.
+
+
+`FatText`라는 컴포넌트를 한번 볼게요.
+
+
+```js
+import React from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+
+const Text = styled.span`
+  font-weight: 600;
+`;
+
+const FatText = ({ text, className }) => (
+  <Text className={className}>{text}</Text>
+);
+
+FatText.propTypes = {
+  text: PropTypes.string.isRequired
+};
+
+export default FatText;
+```
+
+
+FatText의 실사용례는 다음과 같습니다.
+```js
+<FatText text={ "텍스트"  } />
+```
+
+
+이렇게 `text`란 `prop`을 부모 컴포넌트에서 `FatText` 컴포넌트에게 전달하면, `FatText`는 해당 텍스트를 font-weight이 600인 텍스트로 바꾸어 돌려줍니다. 한마디로 더 진하게 만들어주는데요.
+
+
+이 경우 FatText는 Text라는 prop을 받기에 propTypes를 정의해주어야 합니다. 코드의 이 부분과 같습니다.
+
+
+```js
+FatText.propTypes = {
+  text: PropTypes.string.isRequired
+};
+```
+
+
+`FatText` 안에 들어가는 `prop`인 `text`는 `string`이어야만 하고, 필수적으로 주어져야한다는 내용이 정의되어있습니다.
+
+
+병원 프로필 컴포넌트는 url에서 자동으로 input을 받아오는 `withRouter`을 사용해서 이렇게 `prop`과 `proptypes`를 정의해줄 필요가 없었지만, 혹시 이렇게 `prop`을 다루는 컴포넌트를 만들 땐 `propTypes`의 정의가 필요합니다.
+
+
 ---
 
 
