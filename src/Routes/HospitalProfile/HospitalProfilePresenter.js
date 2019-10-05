@@ -4,13 +4,13 @@ import { Helmet } from "rl-react-helmet";
 import Loader from "../../Components/Loader";
 import Avatar from "../../Components/Avatar";
 import FatText from "../../Components/FatText";
+import { Link } from "react-router-dom";
 import FollowButton from "../../Components/FollowButton";
 import Post from "../../Components/Post";
 import Button from "../../Components/Button";
 
 // Tab을 import
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-// import "react-tabs/style/react-tabs.css";
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -97,15 +97,40 @@ const CRowTitle = styled(FatText)`
 `;
 
 const CRowText = styled.p`
-  padding-top: 22px;
+  padding-top: ${props => (props.padding ? String(props.padding) : "0px")};
   font-weight: 200;
   font-size: 13px;
   line-height: 24px;
   color: #666;
 `;
-
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   white-space: nowrap;
+//   max-height: 200px;
 const Docs = styled.div`
   min-height: 30px;
+  margin-top: 22px;
+  display: flex;
+`;
+
+const Doc = styled.div`
+  height: 100px;
+  flex-basis: 50%;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+`;
+
+const DocName = styled.div`
+  flex-direction: column;
+  padding-left: 10px;
+  width: 100%;
+`;
+
+const DocVatar = styled(Avatar)`
+  flex-basis: 25%;
 `;
 
 const STabs = styled(Tabs)``;
@@ -149,6 +174,10 @@ const TabText = styled.a`
   transition: all 0.2s linear;
 `;
 
+const HPLink = styled(Link)`
+  display: flex;
+`;
+
 export default ({ loading, data }) => {
   if (loading === true) {
     return (
@@ -190,11 +219,28 @@ export default ({ loading, data }) => {
       slide();
     }, [currentItem]);
 
+    // Admin과 Staff를 전부 포함하는 리스트를 만듭니다.
+    const medicalStaffs = [];
+    medicalStaffs.push(admin);
+    staffs.forEach(element => {
+      medicalStaffs.push(element);
+    });
+
+    const truncateText = (text, maxLength, link) => {
+      if (text.length > maxLength) {
+        const truncated = text.substr(0, maxLength) + "...";
+        return truncated;
+      } else {
+        return text;
+      }
+    };
+
     return (
       <Wrapper>
         {/* 병원 이름 및 타이틀 */}
         <Helmet>
           <title> {name} | H+ground</title>
+          <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08b2b81a0be7786891d433f049e9a944&libraries=services,clusterer"></script>
         </Helmet>
         {/* 병원 사진 슬라이드 */}
         <Files>
@@ -229,6 +275,7 @@ export default ({ loading, data }) => {
             </Counts>
             <Username text={location} />
           </HeaderColumn>
+          {/* 버튼. 지금은 내가 admin으로 있는 병원인지 아닌지를 보여주는 용도만 존재 */}
           <HeaderColumn length="15%">
             {isYours ? (
               <Button
@@ -268,40 +315,29 @@ export default ({ loading, data }) => {
             <STabPanel>
               <ContentRow key="intro">
                 <CRowTitle text={"병원 소개"} />
-                <CRowText>{bio}</CRowText>
+                <CRowText padding="22px">{bio}</CRowText>
               </ContentRow>
               <ContentRow key="staffProfile">
-                <CRowTitle text={"선생님 프로파일"} />
+                <CRowTitle text={"주 의료진"} />
                 <Docs>
-                  <Avatar size="lg" url={admin.avatar} />
-                  {"원장: " + admin.fullName}
-                  {"\n 이력: " + admin.bio}}
-                  {/* {admin &&
-                admin.map(adm => (<span>{adm.fullName + ":" + adm.bio}</span>))} */}
+                  {medicalStaffs &&
+                    medicalStaffs.map(staff => (
+                      <Doc>
+                        <HPLink to={`/user/${staff.username}`}>
+                          <DocVatar size="md-lg" url={staff.avatar} />
+                          <DocName>
+                            <FatText text={staff.fullName} />
+                            <CRowText>{" 원장"}</CRowText>
+                            <CRowText>{truncateText(staff.bio, 100)}</CRowText>
+                          </DocName>
+                        </HPLink>
+                      </Doc>
+                    ))}
                 </Docs>
-                {
-                  <Docs>
-                    {staffs &&
-                      staffs.map(staff => (
-                        <span>
-                          {"스탭:" + staff.fullName + "\n 이력: " + staff.bio}
-                        </span>
-                      ))}
-                  </Docs>
-                }
               </ContentRow>
               <ContentRow key="location">
                 <CRowTitle text={"위치"} />
                 <Bio>{"병원 위치:   " + location}</Bio>
-              </ContentRow>
-              <ContentRow key="staffNumber">
-                <CRowTitle text={"스탭 인원"} />
-                <Bio>{"Medical Staffs:" + String(staffsCount + 1)}</Bio>
-              </ContentRow>
-              <ContentRow key="patientNumber">
-                <CRowTitle text={"환자 인원수"} />
-
-                <Bio>{"Number of patients:" + String(patientsCount)}</Bio>
               </ContentRow>
             </STabPanel>
             <STabPanel>

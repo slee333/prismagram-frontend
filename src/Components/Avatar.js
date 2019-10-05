@@ -8,6 +8,8 @@ const getSize = size => {
     number = 30;
   } else if (size === "md") {
     number = 50;
+  } else if (size === "md-lg") {
+    number = 80;
   } else if (size === "lg") {
     number = 150;
   }
@@ -45,7 +47,7 @@ const Avatar = ({
 );
 
 Avatar.propTypes = {
-  size: PropTypes.oneOf(["sm", "md", "lg"]),
+  size: PropTypes.oneOf(["sm", "md", "md-lg", "lg"]),
   url: PropTypes.string.isRequired,
   background: PropTypes.string,
   topMargin: PropTypes.number
