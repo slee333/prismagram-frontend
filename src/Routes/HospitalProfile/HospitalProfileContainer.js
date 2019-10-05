@@ -110,6 +110,7 @@ const GET_HOSPITAL = gql`
         }
       }
       isYours
+      address
       staffsCount
       patientsCount
       avatar
