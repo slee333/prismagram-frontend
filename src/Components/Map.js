@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import axios from "axios";
 import { RenderAfterNavermapsLoaded, NaverMap, Marker } from "react-naver-maps";
 
 const Text = styled.p`
@@ -11,6 +10,7 @@ const Text = styled.p`
   color: #666;
 `;
 
+<<<<<<< HEAD
 export default ({ location = "" }) => {
   const [latitude, setLatitude] = useState(37.3595704);
   const [longitude, setLongitude] = useState(127.105399);
@@ -49,6 +49,17 @@ export default ({ location = "" }) => {
     getGeoCode(location);
   }, [])
   
+=======
+export default ({
+  address = {
+    Longitude: "127.105399",
+    Latitude: "37.3595704",
+    jibunAddress: "주소가 주어지지 않았습니다.",
+    roadAddress: "주소가 주어지지 않았습니다."
+  }
+}) => {
+  const { Longitude, Latitude, jibunAddress, roadAddress } = address;
+>>>>>>> hospitalprofile
 
   return (
     <div>
@@ -61,10 +72,12 @@ export default ({ location = "" }) => {
             width: "100%",
             height: "400px"
           }}
-          center={{ lat: latitude, lng: longitude }}
+          center={{ lat: Latitude, lng: Longitude }}
           defaultZoom={10}
         >
-          <Marker position={{ lat: latitude, lng: longitude }} />
+          <Marker
+            position={{ lat: Latitude, lng: Longitude }}
+          />
         </NaverMap>
       </RenderAfterNavermapsLoaded>
     </div>
