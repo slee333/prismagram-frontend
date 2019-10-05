@@ -210,7 +210,7 @@ export default ({ loading, data }) => {
       slide();
     }, [currentItem]);
     useEffect(() => {
-      // console.log(data); 
+      console.log(data); 
     }, []);
 
     // Admin과 Staff를 전부 포함하는 리스트를 만듭니다.
