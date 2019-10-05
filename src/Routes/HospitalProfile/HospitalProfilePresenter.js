@@ -5,9 +5,9 @@ import Loader from "../../Components/Loader";
 import Avatar from "../../Components/Avatar";
 import FatText from "../../Components/FatText";
 import { Link } from "react-router-dom";
-import FollowButton from "../../Components/FollowButton";
 import Post from "../../Components/Post";
 import Button from "../../Components/Button";
+import Map from "../../Components/Map"
 
 // Tab을 import
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -241,6 +241,10 @@ export default ({ loading, data }) => {
         <Helmet>
           <title> {name} | H+ground</title>
           <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08b2b81a0be7786891d433f049e9a944&libraries=services,clusterer"></script>
+          <script
+          type="text/javascript"
+          src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=oseghom2se"
+        ></script>
         </Helmet>
         {/* 병원 사진 슬라이드 */}
         <Files>
@@ -337,7 +341,7 @@ export default ({ loading, data }) => {
               </ContentRow>
               <ContentRow key="location">
                 <CRowTitle text={"위치"} />
-                <Bio>{"병원 위치:   " + location}</Bio>
+                <Map location={location} />
               </ContentRow>
             </STabPanel>
             <STabPanel>
