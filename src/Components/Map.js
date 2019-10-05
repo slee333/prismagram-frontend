@@ -28,11 +28,14 @@ export default ({ location = "" }) => {
     const params = {
       query: address
     };
+    
+    console.log(headers)
+
     const config = { headers, params };
     await axios
       .get("/map-geocode/v2/geocode", config)
       .then(({ data: { addresses } }) => {
-        // console.log(addresses);
+        console.log(addresses);
         setLongitude(addresses[0].x);
         setLatitude(addresses[0].y);
         setJibunAddress(addresses[0].jibunAddress);
