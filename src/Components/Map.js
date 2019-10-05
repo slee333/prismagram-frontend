@@ -33,7 +33,7 @@ export default ({ location = "" }) => {
 
     const config = { headers, params };
     await axios
-      .get("map-geocode/v2/geocode", config)
+      .get("/map-geocode/v2/geocode", config)
       .then(({ data: { addresses } }) => {
         console.log(addresses);
         setLongitude(addresses[0].x);
