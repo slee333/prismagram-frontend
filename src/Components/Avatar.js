@@ -8,6 +8,8 @@ const getSize = size => {
     number = 30;
   } else if (size === "md") {
     number = 50;
+  } else if (size === "md-lg") {
+    number = 80;
   } else if (size === "lg") {
     number = 150;
   }
@@ -24,13 +26,31 @@ const Container = styled.div`
   border-radius:50%;
 `;
 
-const Avatar = ({ size = "sm", url, className }) => (
-  <Container className={className} size={size} url={url} />
+const Background = styled.div`
+  ${props => getSize(props.size)}
+  background-size:cover;
+  background-color: ${props => props.background}
+  border-radius:50%;
+  margin-top: ${props => String(props.topMargin) + "px"}
+`;
+
+const Avatar = ({
+  size = "sm",
+  url,
+  className,
+  background = "transparent",
+  topMargin = 0
+}) => (
+  <Background className={className} size={size} background={background} topMargin={topMargin}>
+    <Container className={className} size={size} url={url} />
+  </Background>
 );
 
 Avatar.propTypes = {
-  size: PropTypes.oneOf(["sm", "md", "lg"]),
-  url: PropTypes.string.isRequired
+  size: PropTypes.oneOf(["sm", "md", "md-lg", "lg"]),
+  url: PropTypes.string.isRequired,
+  background: PropTypes.string,
+  topMargin: PropTypes.number
 };
 
 export default Avatar;
