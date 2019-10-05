@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { RenderAfterNavermapsLoaded, NaverMap, Marker } from "react-naver-maps";
@@ -29,10 +29,10 @@ export default ({ location = "" }) => {
       query: address
     };
     const config = { headers, params };
-    const data = await axios
+    await axios
       .get("/map-geocode/v2/geocode", config)
       .then(({ data: { addresses } }) => {
-        console.log(addresses);
+        // console.log(addresses);
         setLongitude(addresses[0].x);
         setLatitude(addresses[0].y);
         setJibunAddress(addresses[0].jibunAddress);
@@ -41,8 +41,11 @@ export default ({ location = "" }) => {
       })
       .catch(error => console.log(error));
   };
-
-  getGeoCode(location);
+  useEffect(() => {
+    // this is only executed once
+    getGeoCode(location);
+  }, [])
+  
 
   return (
     <div>

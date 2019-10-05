@@ -7,7 +7,7 @@ import FatText from "../../Components/FatText";
 import { Link } from "react-router-dom";
 import Post from "../../Components/Post";
 import Button from "../../Components/Button";
-import Map from "../../Components/Map"
+import Map from "../../Components/Map";
 
 // Tab을 import
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -52,15 +52,11 @@ const Count = styled.li`
   }
 `;
 
-const Bio = styled.p`
-  margin: 10px 0px;
-`;
-
 const Posts = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 200px);
-  grid-template-rows: 200px;
-  grid-auto-rows: 200px;
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Files = styled.div`
@@ -102,11 +98,7 @@ const CRowText = styled.p`
   font-size: 13px;
   line-height: 24px;
   color: #666;
-`;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   white-space: nowrap;
-//   max-height: 200px;
+`; 
 const Docs = styled.div`
   min-height: 30px;
   margin-top: 22px;
@@ -199,11 +191,10 @@ export default ({ loading, data }) => {
         admin,
         isYours,
         staffsCount,
-        patientsCount
+        patientsCount,
+        patients
       }
     } = data;
-
-    console.log(data);
 
     const [currentItem, setCurrentItem] = useState(0);
     const [currentTab, setCurrentTab] = useState(0);
@@ -218,12 +209,25 @@ export default ({ loading, data }) => {
     useEffect(() => {
       slide();
     }, [currentItem]);
+    useEffect(() => {
+      // console.log(data); 
+    }, []);
 
     // Admin과 Staff를 전부 포함하는 리스트를 만듭니다.
     const medicalStaffs = [];
     medicalStaffs.push(admin);
-    staffs.forEach(element => {
-      medicalStaffs.push(element);
+    staffs.forEach(staff => {
+      medicalStaffs.push(staff);
+    });
+
+    // 환자와 의료진의 포스트를 모두 한군데 모읍니다.
+    const communityPosts = [];
+    Array.prototype.push.apply(communityPosts,admin.posts);
+    staffs.forEach(staff => {
+      Array.prototype.push.apply(communityPosts,staff.posts);
+    });
+    patients.forEach(patient => {
+      Array.prototype.push.apply(communityPosts,patient.posts);
     });
 
     const truncateText = (text, maxLength, link) => {
@@ -240,11 +244,10 @@ export default ({ loading, data }) => {
         {/* 병원 이름 및 타이틀 */}
         <Helmet>
           <title> {name} | H+ground</title>
-          <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08b2b81a0be7786891d433f049e9a944&libraries=services,clusterer"></script>
           <script
-          type="text/javascript"
-          src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=oseghom2se"
-        ></script>
+            type="text/javascript"
+            src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=oseghom2se"
+          ></script>
         </Helmet>
         {/* 병원 사진 슬라이드 */}
         <Files>
@@ -364,7 +367,23 @@ export default ({ loading, data }) => {
               </Posts>
             </STabPanel>
             <STabPanel>
-              <h2>Any content 3</h2>
+            <Posts>
+                {communityPosts &&
+                  communityPosts.map(cpost => (
+                    <Post
+                      key={cpost.id}
+                      id={cpost.id}
+                      location={cpost.location}
+                      caption={cpost.caption}
+                      user={cpost.user}
+                      files={cpost.files}
+                      likeCount={cpost.likeCount}
+                      isLiked={cpost.isLiked}
+                      comments={cpost.comments}
+                      createdAt={cpost.createdAt}
+                    />
+                  ))}
+              </Posts>
             </STabPanel>
           </Content>
         </STabs>
