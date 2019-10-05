@@ -10,46 +10,6 @@ const Text = styled.p`
   color: #666;
 `;
 
-<<<<<<< HEAD
-export default ({ location = "" }) => {
-  const [latitude, setLatitude] = useState(37.3595704);
-  const [longitude, setLongitude] = useState(127.105399);
-  const [jibunAddress, setJibunAddress] = useState(
-    "주소가 주어지지 않았습니다."
-  );
-  const [roadAddress, setRoadAddress] = useState("주소가 주어지지 않았습니다.");
-
-  const getGeoCode = async address => {
-    // Naver API로부터 주소의 Geocode를 가져옵니다.
-    const headers = {
-      "X-NCP-APIGW-API-KEY-ID": "oseghom2se",
-      "X-NCP-APIGW-API-KEY": "CIS3zyaShaDOlQV9RjY0aQT6DHEbnTIjDl98o9tI"
-    };
-    const params = {
-      query: address
-    };
-    
-    console.log(headers)
-
-    const config = { headers, params };
-    await axios
-      .get("/map-geocode/v2/geocode", config)
-      .then(({ data: { addresses } }) => {
-        console.log(addresses);
-        setLongitude(addresses[0].x);
-        setLatitude(addresses[0].y);
-        setJibunAddress(addresses[0].jibunAddress);
-        setRoadAddress(addresses[0].roadAddress);
-        return addresses[0];
-      })
-      .catch(error => console.log(error));
-  };
-  useEffect(() => {
-    // this is only executed once
-    getGeoCode(location);
-  }, [])
-  
-=======
 export default ({
   address = {
     Longitude: "127.105399",
@@ -59,7 +19,6 @@ export default ({
   }
 }) => {
   const { Longitude, Latitude, jibunAddress, roadAddress } = address;
->>>>>>> hospitalprofile
 
   return (
     <div>

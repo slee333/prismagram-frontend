@@ -211,11 +211,7 @@ export default ({ loading, data }) => {
       slide();
     }, [currentItem]);
     useEffect(() => {
-<<<<<<< HEAD
-      console.log(data); 
-=======
        console.log(data); 
->>>>>>> hospitalprofile
     }, []);
 
     // Admin과 Staff를 전부 포함하는 리스트를 만듭니다.
