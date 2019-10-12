@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { NotificationManager } from "react-notifications";
 import { CometChat } from "@cometchat-pro/chat";
 import config from "../../config";
-import Chat from "./Chat";
 
 
 const Login = props => {
   const [uidValue, setUidValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [user, setUser] = useState(null);
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -19,7 +17,7 @@ const Login = props => {
         NotificationManager.success("You are now logged in", "Login Success");
         console.log("Login Successful:", { User });
 
-        setUser(User);
+        props.setUser(User);
         // instead redirect to other url
       },
       error => {
@@ -55,7 +53,6 @@ const Login = props => {
           </div>
         </form>
       </div>
-      <Chat user={user} />
     </div>
   );
 };

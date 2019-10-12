@@ -23,6 +23,7 @@ const GET_HOSPITAL = gql`
         username
         isSelf
         bio
+        profession
         posts {
           id
           location
@@ -56,6 +57,7 @@ const GET_HOSPITAL = gql`
         username
         isSelf
         bio
+        profession
         posts {
           id
           location

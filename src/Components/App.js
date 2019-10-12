@@ -1,5 +1,9 @@
 import React from "react";
 
+import 'bootstrap/dist/css/bootstrap.css';
+import 'react-notifications/lib/notifications.css';
+import './App.css';
+
 // GraphQL query를 사용하기 위한 아폴로를 떙겨오구요
 import { gql } from "apollo-boost";
 
