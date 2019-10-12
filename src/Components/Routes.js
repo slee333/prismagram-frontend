@@ -26,7 +26,7 @@ const LoggedInRoutes = () => (
     <Route path="/notifications" component={Notifications} />
     <Route path="/user/:username" component={Profile} />
     <Route path="/hospital/:name" component={HospitalProfile}/>
-    <Route path="/room" component={Room}/>
+    <Route path="/message" component={Room}/>
     <Redirect from="*" to="/" />
   </Switch>
 );

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Link, withRouter } from "react-router-dom";
 import Input from "./Input";
 import useInput from "../Hooks/useInput";
-import { Compass, HeartEmpty, User, Logo } from "./Icons";
+import { Upload, Message, User, Logo } from "./Icons";
 import { useQuery } from "react-apollo-hooks";
 import { ME } from "../SharedQueries";
 
@@ -74,7 +74,7 @@ export default withRouter(({ history }) => {
   const { data } = useQuery(ME);
 
   const onSearchSubmit = e => {
-    // * Search를 눌렀을 때, `/search?term=${search.value}`로 갑니다. 
+    // * Search를 눌렀을 때, `/search?term=${search.value}`로 갑니다.
     // Search component를 불러오는거죠.
     // 근데 이 과정에서 페이지가 새로고침되길 우린 원하지 않으니 e.preventDefault();를 해줍니다.
     e.preventDefault();
@@ -104,11 +104,11 @@ export default withRouter(({ history }) => {
           </form>
         </HeaderColumn>
         <HeaderColumn>
-          <HeaderLink to="/explore">
-            <Compass />
-          </HeaderLink>
           <HeaderLink to="/notifications">
-            <HeartEmpty />
+            <Upload />
+          </HeaderLink>
+          <HeaderLink to="/message">
+            <Message />
           </HeaderLink>
           {!data.me ? (
             <HeaderLink to="/user/#">

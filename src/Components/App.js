@@ -29,6 +29,8 @@ import Routes from "./Routes";
 import Footer from "./Footer";
 import Header from "./Header";
 
+import Sidebar from "../Components/Sidebar"
+
 // GraphQL query를 아폴로를 이용해 웹 개발시 사용하는 방식입니다. 
 // 사용자 사이드에서 로그인이 되었는지 확인하는 query입니다.
 const QUERY = gql`
@@ -56,6 +58,7 @@ export default () => {
         <Router>
           <>
             {isLoggedIn && <Header />}
+            {isLoggedIn && <Sidebar/> }
             <Wrapper>
               <Routes isLoggedIn={isLoggedIn}/>
               <Footer />

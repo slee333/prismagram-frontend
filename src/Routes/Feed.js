@@ -50,14 +50,14 @@ export default () => {
   // return 되는 객체들은 data (query 결과값)와 loading (로딩중인지 아닌지)입니다.
   // 로딩중일땐 Loader.js를 불러옵니다.
 
-  // data.seedFeed.map(post => ...) 를 통해서 데이터 내에 존재하는 모든 post 데이터들을 
-  // 피드에 표시해줍니다.
-  const { data, loading } = useQuery(FEED_QUERY); 
+  const { data, loading } = useQuery(FEED_QUERY);
+
   return (
     <Wrapper>
       <Helmet>
         <title>Feed | Prismagram</title>
-      </Helmet>
+      </Helmet> 
+
       {loading && <Loader />}
       {!loading &&
         data &&

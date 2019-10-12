@@ -46,7 +46,7 @@ const Login = props => {
           <div className="form-group">
             <input
               type="submit"
-              className="btn btn-primary btn-block"
+              className="btn btn-success btn-block"
               value={`${isSubmitting ? "Loading..." : "Login"}`}
               disabled={isSubmitting}
             />

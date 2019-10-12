@@ -24,8 +24,55 @@ const GET_USER = gql`
         }
         likeCount
         commentCount
+        location
+        caption
+        files {
+          id
+          url
+        }
+        user {
+          id
+          avatar
+          username
+        }
+        likeCount
+        isLiked
+        comments {
+          id
+          text
+          user {
+            id
+            username
+          }
+        }
+        createdAt
       }
       interest
+      patientof {
+        id
+        name
+        avatar
+        posts {
+          id
+          location
+          caption
+          files {
+            id
+            url
+          }
+          likeCount
+          isLiked
+          comments {
+            id
+            text
+            user {
+              id
+              username
+            }
+          }
+          createdAt
+        }
+      }
     }
   }
 `;

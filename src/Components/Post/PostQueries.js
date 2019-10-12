@@ -5,7 +5,15 @@ export const TOGGLE_LIKE = gql`
     toggleLike(postId: $postId)
   }
 `;
-
+export const ADD_POST = gql`
+  mutation upload($caption: String!, $files: [String!]!, $location:String) {
+    upload(caption:$caption, files:$files, location:$location) {
+      id
+      caption
+      location
+    }
+  }
+`;
 export const ADD_COMMENT = gql`
   mutation addComment($postId: String!, $text: String!) {
     addComment(postId: $postId, text: $text) {

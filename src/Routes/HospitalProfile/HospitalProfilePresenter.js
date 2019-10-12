@@ -98,7 +98,7 @@ const CRowText = styled.p`
   font-size: 13px;
   line-height: 24px;
   color: #666;
-`; 
+`;
 const Docs = styled.div`
   min-height: 30px;
   margin-top: 22px;
@@ -106,7 +106,7 @@ const Docs = styled.div`
 `;
 
 const Doc = styled.div`
-  height: 100px;
+  height: 110px;
   flex-basis: 50%;
   display: flex;
   align-items: center;
@@ -168,6 +168,23 @@ const TabText = styled.a`
 
 const HPLink = styled(Link)`
   display: flex;
+  text-decoration: none;
+  align-items: center;
+`;
+
+const Profession = styled.div`
+  border-radius: 90%;
+  background-color: #aaa;
+  display: inline-block;
+  padding: 5px;
+  border-radius: 25px;
+  margin-right: 5px;
+`;
+
+const Subj = styled.p`
+  font-size: 12px;
+  color: black;
+  font-weight: 400;
 `;
 
 export default ({ loading, data }) => {
@@ -211,7 +228,7 @@ export default ({ loading, data }) => {
       slide();
     }, [currentItem]);
     useEffect(() => {
-       console.log(data); 
+      console.log(data);
     }, []);
 
     // Admin과 Staff를 전부 포함하는 리스트를 만듭니다.
@@ -223,12 +240,12 @@ export default ({ loading, data }) => {
 
     // 환자와 의료진의 포스트를 모두 한군데 모읍니다.
     const communityPosts = [];
-    Array.prototype.push.apply(communityPosts,admin.posts);
+    Array.prototype.push.apply(communityPosts, admin.posts);
     staffs.forEach(staff => {
-      Array.prototype.push.apply(communityPosts,staff.posts);
+      Array.prototype.push.apply(communityPosts, staff.posts);
     });
     patients.forEach(patient => {
-      Array.prototype.push.apply(communityPosts,patient.posts);
+      Array.prototype.push.apply(communityPosts, patient.posts);
     });
 
     const truncateText = (text, maxLength, link) => {
@@ -331,14 +348,21 @@ export default ({ loading, data }) => {
                   {medicalStaffs &&
                     medicalStaffs.map(staff => (
                       <Doc>
-                        <HPLink to={`/user/${staff.username}`}>
-                          <DocVatar size="md-lg" url={staff.avatar} />
-                          <DocName>
+                        <DocVatar size="md-lg" url={staff.avatar} />
+                        <DocName>
+                          <HPLink to={`/user/${staff.username}`}>
                             <FatText text={staff.fullName} />
-                            <CRowText>{" 원장"}</CRowText>
-                            <CRowText>{truncateText(staff.bio, 100)}</CRowText>
-                          </DocName>
-                        </HPLink>
+                          </HPLink>
+                          <CRowText>{" 원장"}</CRowText>
+
+                          {staff.profession.map(specialty => (
+                            <Profession>
+                              <Subj>{specialty}</Subj>
+                            </Profession>
+                          ))}
+
+                          <CRowText>{truncateText(staff.bio, 100)}</CRowText>
+                        </DocName>
                       </Doc>
                     ))}
                 </Docs>
@@ -368,7 +392,7 @@ export default ({ loading, data }) => {
               </Posts>
             </STabPanel>
             <STabPanel>
-            <Posts>
+              <Posts>
                 {communityPosts &&
                   communityPosts.map(cpost => (
                     <Post

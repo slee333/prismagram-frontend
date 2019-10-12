@@ -1,6 +1,6 @@
 const config = {
-  appID: '845716c5962833',
-  apiKey: 'a9b1446f6334c5ad2d7f3b5707b8bb3886672cd7',
+  appID: '961233c9e2b8b1',
+  apiKey: 'c3ae488a1a26a3f3d4347af8c3b1f9a7a9ea6778',
 };
 
 export default config;

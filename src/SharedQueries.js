@@ -4,6 +4,18 @@ export const ME = gql`
   {
     me {
       username
+      patientof {
+        id
+        name
+      }
+      adminof {
+        id
+        name
+      }
+      staffof {
+        id
+        name
+      }
     }
   }
 `;
