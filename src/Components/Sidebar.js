@@ -35,13 +35,13 @@ export default () => {
   if (loading) {
     return <div> </div>;
   } else {
-    const { adminof, patientof, staffof } = data.me;
-    console.log(adminof);
+    console.log(data)
+    const { adminof, patientof, staffof } = data.me ;
     return (
       <>
         <SideBar>
           <Category>
-            {adminof.length !== 0 && staffof.length !== 0 ? (
+            {adminof.length !== 0 || staffof.length !== 0 ? (
               <CatTitle>소속</CatTitle>
             ) : (
               <div></div>
