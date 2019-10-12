@@ -39,7 +39,7 @@ export default () => (
         <Link href="#">support</Link>
       </ListItem>
       <ListItem>
-        <Link href="#">press</Link>
+        <Link href="#">블로그</Link>
       </ListItem>
       <ListItem>
         <Link href="#">api</Link>
@@ -66,6 +66,6 @@ export default () => (
         <Link href="#">language</Link>
       </ListItem>
     </List>
-    <Copyright>Instaclone {new Date().getFullYear()} &copy;</Copyright>
+    <Copyright>H+ground {new Date().getFullYear()} &copy;</Copyright>
   </Footer>
 );
